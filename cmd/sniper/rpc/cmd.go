@@ -147,7 +147,7 @@ func genImplements() {
 	serverFile = fmt.Sprintf("%s/server/%sserver%s/%s.go", rootDir, server, version, service)
 
 	if !legacy {
-		serverFile = fmt.Sprintf("%s/rpc/%s/v%s/%s.go", rootDir, server, version, service)
+		serverFile = fmt.Sprintf("%s/internal/service/%s.go", rootDir, service)
 		initNewTpl()
 	}
 

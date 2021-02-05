@@ -1,4 +1,4 @@
-package xnsq
+package nsq
 
 import (
 	"moocss.com/gaea/pkg/conf"

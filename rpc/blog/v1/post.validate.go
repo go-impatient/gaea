@@ -19,7 +19,7 @@ var (
 	_ = (*url.URL)(nil)
 )
 
-func (m *PostEchoReq) validate() error {
+func (m *GetPostRequest) validate() error {
 	if m == nil {
 		return nil
 	}
@@ -27,20 +27,20 @@ func (m *PostEchoReq) validate() error {
 	return nil
 }
 
-type PostEchoReqValidationError struct {
+type GetPostRequestValidationError struct {
 	field  string
 	reason string
 }
 
 // Error satisfies the builtin error interface
-func (e PostEchoReqValidationError) Error() string {
+func (e GetPostRequestValidationError) Error() string {
 	return fmt.Sprintf(
-		"invalid PostEchoReq.%s: %s",
+		"invalid GetPostRequestValidationError.%s: %s",
 		e.field,
 		e.reason)
 }
 
-func (m *PostEchoResp) validate() error {
+func (m *GetPostReply) validate() error {
 	if m == nil {
 		return nil
 	}
@@ -48,15 +48,15 @@ func (m *PostEchoResp) validate() error {
 	return nil
 }
 
-type PostEchoRespValidationError struct {
+type GetPostReplyValidationError struct {
 	field  string
 	reason string
 }
 
 // Error satisfies the builtin error interface
-func (e PostEchoRespValidationError) Error() string {
+func (e GetPostReplyValidationError) Error() string {
 	return fmt.Sprintf(
-		"invalid PostEchoResp.%s: %s",
+		"invalid GetPostReply.%s: %s",
 		e.field,
 		e.reason)
 }

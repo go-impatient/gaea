@@ -6,11 +6,28 @@ import (
 	"github.com/pkg/errors"
 )
 
-// NotLoginError 错误未登录
-var NotLoginError = twirp.NewError(twirp.Unauthenticated, "must login")
+var (
+	// NotLoginError 错误未登录
+	NotLoginError = twirp.NewError(twirp.Unauthenticated, "must login")
 
-// PermissionDeniedError 权限不够
-var PermissionDeniedError = twirp.NewError(twirp.PermissionDenied, "permission denied")
+	// PermissionDeniedError 权限不够
+	PermissionDeniedError = twirp.NewError(twirp.PermissionDenied, "permission denied")
+
+	// token过期
+	TokenExpired error = twirp.NewError(twirp.DeadlineExceeded, "Token is expired")
+
+	// token未激活
+	TokenNotValidYet error = twirp.NewError(twirp.InvalidArgument, "Token not active yet")
+
+	// 不是token
+	TokenMalformed error = twirp.NewError(twirp.InvalidArgument, "That's not even a token")
+
+	// 无法处理token
+	TokenInvalid error = twirp.NewError(twirp.InvalidArgument, "Couldn't handle this token:")
+
+	// token生成错误
+	TokenFailure error = twirp.NewError(twirp.InvalidArgument, "Token generate failure")
+)
 
 // Wrap 包装错误信息，附加调用栈
 // 第二个参数只能是 string，也可以不传，大部分情况不用传

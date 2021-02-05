@@ -1,4 +1,4 @@
-package xnsq
+package nsq
 
 import (
 	"strings"

@@ -22,7 +22,6 @@ import (
 	"moocss.com/gaea/pkg/metrics"
 	"moocss.com/gaea/pkg/trace"
 
-	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	crond "github.com/robfig/cron"
 	"github.com/spf13/cobra"
@@ -69,7 +68,7 @@ If you run job cmd WITHOUT any sub cmd, job will be sheduled like cron.`,
 
 			httpd.HandleFunc("/ListTasks", func(w httpd.ResponseWriter, r *httpd.Request) {
 				ctx := context.Background()
-				span, ctx := opentracing.StartSpanFromContext(ctx, "ListTasks")
+				span, ctx := trace.StartSpanFromContext(ctx, "ListTasks")
 				defer span.Finish()
 
 				w.Header().Set("x-trace-id", trace.GetTraceID(ctx))
@@ -87,7 +86,7 @@ If you run job cmd WITHOUT any sub cmd, job will be sheduled like cron.`,
 
 			httpd.HandleFunc("/RunTask", func(w httpd.ResponseWriter, r *httpd.Request) {
 				ctx := context.Background()
-				span, ctx := opentracing.StartSpanFromContext(ctx, "RunTask")
+				span, ctx := trace.StartSpanFromContext(ctx, "RunTask")
 				defer span.Finish()
 
 				w.Header().Set("x-trace-id", trace.GetTraceID(ctx))
@@ -248,7 +247,7 @@ func manual(name string, job func(ctx context.Context) error) {
 
 func regjob(name string, spec string, job func(ctx context.Context) error, tasks []string) (ji *jobInfo) {
 	j := func(ctx context.Context) (err error) {
-		span, ctx := opentracing.StartSpanFromContext(ctx, "Cron")
+		span, ctx := trace.StartSpanFromContext(ctx, "Cron")
 		defer span.Finish()
 
 		span.SetTag("name", name)

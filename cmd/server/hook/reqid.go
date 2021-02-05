@@ -4,11 +4,11 @@ import (
 	"context"
 	"time"
 
+	"github.com/opentracing/opentracing-go"
+
 	"moocss.com/gaea/pkg/ctxkit"
 	"moocss.com/gaea/pkg/trace"
 	"moocss.com/gaea/pkg/twirp"
-
-	"github.com/opentracing/opentracing-go"
 )
 
 // NewRequestID 生成唯一请求标识并记录到 ctx

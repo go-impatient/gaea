@@ -20,7 +20,7 @@ var (
 	// Hostname 主机名
 	Hostname = "localhost"
 	// AppID 获取 APP_ID
-	AppID = "localapp"
+	AppID = "gaea_app"
 	// IsDevEnv 开发环境标志
 	IsDevEnv = false
 	// IsUatEnv 集成环境标志
@@ -73,7 +73,6 @@ func init() {
 		logger().WithField("path", path).Info("use default conf path")
 	}
 
-
 	fs, err := ioutil.ReadDir(path)
 	if err != nil {
 		panic(err)
@@ -89,8 +88,11 @@ func init() {
 		v := viper.New()
 		v.SetConfigFile(path + "/" + f.Name())
 		if err := v.ReadInConfig(); err != nil {
+			logger().Warnf("Using config file: %s [%s]\n", viper.ConfigFileUsed(), err)
 			panic(err)
 		}
+
+		// 读取匹配的环境变量
 		v.AutomaticEnv()
 
 		name := strings.TrimSuffix(f.Name(), ".toml")
@@ -215,7 +217,11 @@ func (c *Conf) Set(key string, value string) {
 // 目前仅支持 toml 文件，不用传扩展名
 // 如果要读取 foo.toml 配置，可以 File("foo").Get("bar")
 func File(name string) *Conf {
-	return files[name]
+	res, _ := files[name]
+	if res == nil {
+		res = &Conf{viper: &viper.Viper{}}
+	}
+	return res
 }
 
 // OnConfigChange 注册配置文件变更回调

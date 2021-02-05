@@ -4,13 +4,12 @@ import (
 	"context"
 	"time"
 
+	"github.com/opentracing/opentracing-go"
 	"moocss.com/gaea/pkg/conf"
 	"moocss.com/gaea/pkg/ctxkit"
 	"moocss.com/gaea/pkg/log"
 	"moocss.com/gaea/pkg/metrics"
 	"moocss.com/gaea/pkg/twirp"
-
-	"github.com/opentracing/opentracing-go"
 )
 
 type bizResponse interface {

@@ -8,28 +8,19 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"runtime/debug"
-	"strings"
 	"sync"
 	"syscall"
 	"time"
 
 	"moocss.com/gaea/pkg"
 	"moocss.com/gaea/pkg/conf"
-	"moocss.com/gaea/pkg/ctxkit"
 	"moocss.com/gaea/pkg/log"
-	"moocss.com/gaea/pkg/trace"
+	"moocss.com/gaea/pkg/middleware"
 
-	opentracing "github.com/opentracing/opentracing-go"
-	"github.com/opentracing/opentracing-go/ext"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 var server *http.Server
-
-type panicHandler struct {
-	handler http.Handler
-}
 
 // 从 http 标准库搬来的
 type tcpKeepAliveListener struct {
@@ -47,57 +38,6 @@ func (ln tcpKeepAliveListener) Accept() (net.Conn, error) {
 }
 
 var logger = log.Get(context.Background())
-
-func startSpan(r *http.Request) (*http.Request, opentracing.Span) {
-	operation := "ServerHTTP"
-
-	ctx := r.Context()
-	var span opentracing.Span
-
-	tracer := opentracing.GlobalTracer()
-	carrier := opentracing.HTTPHeadersCarrier(r.Header)
-
-	if spanCtx, err := tracer.Extract(opentracing.HTTPHeaders, carrier); err == nil {
-		span = opentracing.StartSpan(operation, ext.RPCServerOption(spanCtx))
-		ctx = opentracing.ContextWithSpan(ctx, span)
-	} else {
-		span, ctx = opentracing.StartSpanFromContext(ctx, operation)
-	}
-
-	ext.SpanKindRPCServer.Set(span)
-	span.SetTag(string(ext.HTTPUrl), r.URL.Path)
-
-	return r.WithContext(ctx), span
-}
-
-func (s panicHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	r, span := startSpan(r)
-
-	defer func() {
-		if rec := recover(); rec != nil {
-			ctx := r.Context()
-			ctx = ctxkit.WithTraceID(ctx, trace.GetTraceID(ctx))
-			log.Get(ctx).Error(rec, string(debug.Stack()))
-		}
-		span.Finish()
-	}()
-
-	origin := r.Header.Get("Origin")
-	suffix := conf.Get("CORS_ORIGIN_SUFFIX")
-
-	if origin != "" && suffix != "" && strings.HasSuffix(origin, suffix) {
-		w.Header().Add("Access-Control-Allow-Origin", origin)
-		w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
-		w.Header().Add("Access-Control-Allow-Credentials", "true")
-		w.Header().Add("Access-Control-Allow-Headers", "Origin,No-Cache,X-Requested-With,If-Modified-Since,Pragma,Last-Modified,Cache-Control,Expires,Content-Type,Access-Control-Allow-Credentials,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Cache-Webcdn,Content-Length")
-	}
-
-	if r.Method == http.MethodOptions {
-		return
-	}
-
-	s.handler.ServeHTTP(w, r)
-}
 
 func main() {
 	reload := make(chan int, 1)
@@ -148,7 +88,15 @@ func startServer() {
 		}
 	}
 
-	handler := http.TimeoutHandler(panicHandler{handler: mux}, timeout, "timeout")
+	// 中间件
+	m := middleware.NewMiddleware()
+	m.Use(middleware.Recovery)
+	m.Use(middleware.Cors)
+	panicHandler := m.Add(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		mux.ServeHTTP(w, r)
+	}))
+
+	handler := http.TimeoutHandler(panicHandler, timeout, "timeout")
 
 	prefix := conf.Get("RPC_PREFIX")
 	if prefix == "" {

@@ -16,6 +16,12 @@ const (
 	UserIPKey
 	// UserIDKey 用户 ID，未登录则为 0，类型：int64
 	UserIDKey
+
+	// CookieKey web 用户登录令牌
+	CookieKey
+
+	// PlatformKey 用户使用平台，ios, android, pc
+	PlatformKey
 )
 
 // GetTraceID 获取用户请求标识
@@ -34,9 +40,34 @@ func GetUserIP(ctx context.Context) string {
 	ip, _ := ctx.Value(UserIPKey).(string)
 	return ip
 }
+// WithUserIP 注入用户 IP
+func WithUserIP(ctx context.Context, userIP string) context.Context {
+	return context.WithValue(ctx, UserIPKey, userIP)
+}
 
 // GetUserID 获取当前登录用户 ID
 func GetUserID(ctx context.Context) int64 {
 	uid, _ := ctx.Value(UserIDKey).(int64)
 	return uid
+}
+
+// WithUserID 注入当前登录用户 ID
+func WithUserID(ctx context.Context, userID int64) context.Context  {
+	return context.WithValue(ctx, UserIDKey, userID)
+}
+
+// GetPlatform 获取用户平台
+func GetPlatform(ctx context.Context) string {
+	platform, _ := ctx.Value(PlatformKey).(string)
+	return platform
+}
+// WithPlatform 注入用户平台 PlatformKey
+func WithPlatform(ctx context.Context, platform string) context.Context {
+	return context.WithValue(ctx, PlatformKey, platform)
+}
+
+// GetCookie 获取 web cookie
+func GetCookie(ctx context.Context) string {
+	key, _ := ctx.Value(CookieKey).(string)
+	return key
 }

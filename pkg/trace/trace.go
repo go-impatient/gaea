@@ -5,13 +5,14 @@ import (
 	"io"
 	"net/http"
 
-	"moocss.com/gaea/pkg/conf"
-
 	opentracing "github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/ext"
 	"github.com/uber/jaeger-client-go"
 	"github.com/uber/jaeger-client-go/config"
 	"github.com/uber/jaeger-client-go/log"
 	"github.com/uber/jaeger-lib/metrics"
+
+	"moocss.com/gaea/pkg/conf"
 )
 
 var closer io.Closer
@@ -58,6 +59,43 @@ func init() {
 
 	closer = c
 	opentracing.SetGlobalTracer(tracer)
+}
+
+// StartSpanFromContext starts and returns a Span with `operationName`, using
+// any Span found within `ctx` as a ChildOfRef. If no such parent could be
+// found, StartSpanFromContext creates a root (parentless) Span.
+//
+// The second return value is a context.Context object built around the
+// returned Span.
+//
+// Example usage:
+//
+//    SomeFunction(ctx context.Context, ...) {
+//        sp, ctx := opentracing.StartSpanFromContext(ctx, "SomeFunction")
+//        defer sp.Finish()
+//        ...
+//    }
+func StartSpanFromContext(ctx context.Context, operationName string, opts ...opentracing.StartSpanOption) (opentracing.Span, context.Context) {
+	return opentracing.StartSpanFromContext(ctx, operationName, opts...)
+}
+
+// StartSpan 启动http服务的span
+func StartSpan(r *http.Request, operation string) (req *http.Request, span opentracing.Span) {
+	ctx := r.Context()
+	tracer := opentracing.GlobalTracer()
+	carrier := opentracing.HTTPHeadersCarrier(r.Header)
+
+	if spanCtx, err := tracer.Extract(opentracing.HTTPHeaders, carrier); err == nil {
+		span = opentracing.StartSpan(operation, ext.RPCServerOption(spanCtx))
+		ctx = opentracing.ContextWithSpan(ctx, span)
+	} else {
+		span, ctx = StartSpanFromContext(ctx, operation)
+	}
+
+	ext.SpanKindRPCServer.Set(span)
+	span.SetTag(string(ext.HTTPUrl), r.URL.Path)
+
+	return r.WithContext(ctx), span
 }
 
 // GetTraceID 查询 trace_id
@@ -113,10 +151,10 @@ func InjectTraceHeader(ctx opentracing.SpanContext, req *http.Request) {
 func StartFollowSpanFromContext(ctx context.Context, operation string) (opentracing.Span, context.Context) {
 	span := opentracing.SpanFromContext(ctx)
 	if span == nil {
-		return opentracing.StartSpanFromContext(ctx, operation)
+		return StartSpanFromContext(ctx, operation)
 	}
 
-	return opentracing.StartSpanFromContext(ctx, operation, opentracing.FollowsFrom(span.Context()))
+	return StartSpanFromContext(ctx, operation, opentracing.FollowsFrom(span.Context()))
 }
 
 // Stop 停止 trace 协程

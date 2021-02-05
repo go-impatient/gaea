@@ -18,7 +18,6 @@ import (
 	"moocss.com/gaea/pkg/metrics"
 	"moocss.com/gaea/pkg/trace"
 
-	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 )
 
@@ -60,7 +59,7 @@ func NewInsecureClient(timeout time.Duration) Client {
 var digitsRE = regexp.MustCompile(`\b\d+\b`)
 
 func (c *myClient) Do(ctx context.Context, req *http.Request) (resp *http.Response, err error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "DoHTTP")
+	span, ctx := trace.StartSpanFromContext(ctx, "DoHTTP")
 	defer span.Finish()
 
 	req = req.WithContext(ctx)

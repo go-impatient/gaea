@@ -38,7 +38,7 @@ LIB_PBGENS := $(LIB_PROTOS:.proto=.pb.go)
 				)\
 			)\
 		))
-	protoc --twirp_out=root_package=gaea,validate_enable=true,M$m:. \
+	protoc --twirp_out=root_package=moocss.com/gaea,validate_enable=true,M$m:. \
 		--go_out=M$m:. \
 		$<
 
@@ -56,5 +56,17 @@ cmd:
 
 clean:
 	git clean -x -f -d
+
+rename:
+	go run cmd/sniper/main.go rename  --package $(name)	
+
+run-public:
+	export APP_ID=GaeaApi; export DEPLOY_ENV=uat; go run main.go server --port=8080;
+
+run-private:
+	export APP_ID=GaeaInternalApi; go run main.go server --port=8080 --internal;
+
+run-job:
+	export APP_ID=GaeaJob; go run main.go job --port=8081;
 
 .PHONY: clean rpc util cmd

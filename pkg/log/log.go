@@ -19,11 +19,11 @@ func init() {
 }
 
 func initPP() {
+	mypp := pp.New()
 	out := os.Stdout
-	pp.SetDefaultOutput(out)
-
+	mypp.SetOutput(out)
 	if !isatty.IsTerminal(out.Fd()) {
-		pp.ColoringEnabled = false
+		mypp.SetColoringEnabled(false)
 	}
 }
 

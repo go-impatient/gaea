@@ -41,6 +41,7 @@ go build ./cmd/sniper
 
 ### 安装 protoc-gen-twirp
 ```bash
+# 首次使用需要安装 protoc-gen-twirp 工具
 make cmd
 ```
 
@@ -48,9 +49,21 @@ make cmd
 ```bash
 ./sniper rename --package moocss.com/gaea 
 ```
-### 生成 rpc service
+### 初次生成 rpc 代码
 ```bash
 ./sniper rpc --server example --service helloworld
+```
+
+### 生成 rpc 代码
+```bash
+# 针对指定服务
+protoc --go_out=. --twirp_out=. echo.proto
+
+# 针对所有服务
+find rpc -name '*.proto' -exec protoc --twirp_out=. --go_out=. {} \;
+
+# 建议直接使用框架提供的 make 规则
+make rpc
 ```
 
 ### 测试
@@ -69,4 +82,10 @@ echo 'msg:"Hello World"' \
       --data-binary @- \
       http://localhost:8080/api/example.v1.Helloworld/Echo \
     | protoc --decode example.v1.HelloworldEchoResp ./rpc/example/v1/helloworld.proto
+```
+
+### 批量修改文件内容
+```bash
+grep -rl "检索内容" --include="*" ./ | xargs sed -i "" "s/检索内容/修改后内容/g"
+
 ```
