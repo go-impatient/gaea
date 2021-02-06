@@ -12,7 +12,7 @@ type Nsq struct {
 
 func NewNsq() Nsq {
 	return Nsq{
-		Host: conf.Get("NSQ_HOST"),
-		Port: conf.Get("NSQ_PORT"),
+		Host: conf.Get("features.nsq.host"),
+		Port: conf.Get("features.nsq.port"),
 	}
 }

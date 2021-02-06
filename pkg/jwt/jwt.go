@@ -48,7 +48,7 @@ type JWT interface {
 // jwt基本数据结构
 type jwt struct {
 	SigningKey  []byte // // 签名的signkey
-	ExpiresTime int64 // 过期时间
+	ExpiresTime int64  // 过期时间
 }
 
 // New 初始化jwt实例
@@ -157,7 +157,7 @@ func (j *jwt) TokenExpires(tokenString string) (bool, error) {
 
 func (j *jwt) createTokenString(claims CustomClaims) (string, error) {
 	var method jwtgo.SigningMethod
-	signingMethod := conf.Get("JWT_SIGNING_METHOD")
+	signingMethod := conf.Get("app.jwt.signing_method")
 
 	switch signingMethod {
 	case "HS256":
@@ -233,7 +233,7 @@ func pretty(data interface{}) {
 
 // getSignKey 获取signing key
 func getSignKey() []byte {
-	signingKey := conf.Get("JWT_SIGNING_KEY")
+	signingKey := conf.Get("app.jwt.secret")
 	if len(signingKey) == 0 {
 		signingKey = SignKey // 默认signing key
 	}
@@ -248,7 +248,7 @@ func getSignKey() []byte {
 
 // getExpiresTime 获取过期时间
 func getExpiresTime() int64 {
-	jTime := conf.GetInt("JWT_EFFECTIVE_DURATION")
+	jTime := conf.GetInt("app.jwt.expire")
 	if jTime == 0 {
 		jTime = ExpiresTime
 	}

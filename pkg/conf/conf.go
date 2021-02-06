@@ -70,6 +70,7 @@ func init() {
 		if path, err = os.Getwd(); err != nil {
 			panic(err)
 		}
+		path = path + "/config"
 		logger().WithField("path", path).Info("use default conf path")
 	}
 
@@ -81,9 +82,11 @@ func init() {
 	files = make(map[string]*Conf, len(fs))
 
 	for _, f := range fs {
-		if !strings.HasSuffix(f.Name(), ".toml") {
+		if !strings.HasSuffix(f.Name(), ".yaml") {
 			continue
 		}
+
+		// logger().Infof("文件列表: %v", f.Name())
 
 		v := viper.New()
 		v.SetConfigFile(path + "/" + f.Name())
@@ -95,7 +98,7 @@ func init() {
 		// 读取匹配的环境变量
 		v.AutomaticEnv()
 
-		name := strings.TrimSuffix(f.Name(), ".toml")
+		name := strings.TrimSuffix(f.Name(), ".yaml")
 		files[name] = &Conf{v}
 	}
 }

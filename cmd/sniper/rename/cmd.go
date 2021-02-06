@@ -72,7 +72,7 @@ var Cmd = &cobra.Command{
 		}
 
 		{
-			sh := fmt.Sprintf(`sed -i '' 's#"sniper"#"%s"#' pkg/conf/conf.go && mv sniper.toml %s.toml`, rootPkg, rootPkg)
+			sh := fmt.Sprintf(`sed -i '' 's#"sniper"#"%s"#' pkg/conf/conf.go && mv config/gaea.toml config/%s.toml`, rootPkg, rootPkg)
 
 			c := exec.Command("bash")
 			c.Stdin = strings.NewReader(sh)

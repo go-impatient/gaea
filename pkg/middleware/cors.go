@@ -15,7 +15,7 @@ func Cors(next http.Handler) http.Handler {
 		log.Get(context.Background()).Println("cors before")
 
 		origin := r.Header.Get("Origin")
-		suffix := conf.Get("CORS_ORIGIN_SUFFIX")
+		suffix := conf.Get("app.cors_origin_suffix")
 
 		if origin != "" && suffix != "" && strings.HasSuffix(origin, suffix) {
 			w.Header().Add("Access-Control-Allow-Origin", origin)

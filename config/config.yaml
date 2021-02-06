@@ -1,0 +1,67 @@
+# 应用基础配置
+app:
+  read_header_timeout: "20s"
+  read_timeout: "60s"
+  write_timeout: "120s"
+  idle_timeout: "90s"
+  # cors_origin_suffix:
+  tls:
+    cert_file: "/config/certs/cert.pem"
+    key_file: "/config/certs/key.pem"
+    ca_file: "/config/certs/ca-cert.pem"
+    server_name: "localhost"
+    enabled: true
+  jwt:
+    signing_method: "HS512"
+    secret: "Z3d0X3NpZ25fa2V5" # 签名密钥, gwt_sign_key
+    expire: 172800 # 秒为单位默认2天
+
+# 数据库配置
+database:
+  dialect: "mysql"
+  host: "localhost"
+  port: 3306
+  username: "root"
+  password: "xinyi116518"
+  database: "gaia"
+  ssl: false
+  max_idle_conns: 0
+  max_open_conns: 0
+  logging: true
+
+# 邮件服务配置
+mail:
+  enabled": true
+  username": "yourGmailUsername"
+  password": "yourGmailAppPassword"
+  mail_server": "smtp.163.com"
+  port": 587
+  from": "from@gmail.com"
+
+# 缓存配置
+cache:
+  type: "none"
+  timeout: 60
+  redis:
+    default_init_conns: 1 # 初始连接数
+    default_max_conns: 2 # 最大连接数
+    addr: "127.0.0.1:6379"
+    password: ""
+    db: 1
+
+# 扩展功能
+features:
+  metrics: # prometheus
+    address: 127.0.0.1:8125
+    flush_interval: 1000000000
+    enabled: false
+  tracing: # jaeger
+    address: 127.0.0.1:6831
+    flush_interval: 5000000000
+    sampler_param: 1
+    enabled: false
+  job:
+    enabled: false
+  nsq:
+    host: "localhost"
+    port: 4151

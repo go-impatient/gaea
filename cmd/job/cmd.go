@@ -262,7 +262,7 @@ func regjob(name string, spec string, job func(ctx context.Context) error, tasks
 			}
 		}()
 
-		if conf.GetBool("JOB_PAUSE") {
+		if conf.GetBool("features.job.enabled") {
 			logger.Errorf("skip cron job %s[%s]", name, spec)
 			return
 		}

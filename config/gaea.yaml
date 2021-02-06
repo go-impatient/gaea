@@ -1,0 +1,10 @@
+# 全局日志级别
+LOG_LEVEL: "info"
+LOG_PATH: "/logs/gaea.log"
+
+# rpc 接口路径前缀
+RPC_PREFIX: "/api"
+
+# rpc 接口超时时间
+# INTERNAL_API_TIMEOUT: 600
+# OUTER_API_TIMEOUT: 600
