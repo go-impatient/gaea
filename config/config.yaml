@@ -1,5 +1,6 @@
 # 应用基础配置
 app:
+  mode: "debug" # "prod" | "dev" | "debug" | "test"
   read_header_timeout: "20s"
   read_timeout: "60s"
   write_timeout: "120s"
@@ -19,14 +20,10 @@ app:
 # 数据库配置
 database:
   dialect: "mysql"
-  host: "localhost"
-  port: 3306
-  username: "root"
-  password: "xinyi116518"
-  database: "gaia"
-  ssl: false
-  max_idle_conns: 0
-  max_open_conns: 0
+  dsn: "foo:bar@tcp(127.0.0.1:3306)/baz?charset=utf8&parseTime=True&loc=Local"
+  max_idle_conns: 10
+  max_open_conns: 100
+  conn_max_lifetime: 1h
   logging: true
 
 # 邮件服务配置

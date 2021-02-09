@@ -1,14 +1,25 @@
-package data
+package database
 
 import (
 	"context"
 	"database/sql"
 	"log"
+	"sync"
 	"time"
 
-	entsql "github.com/facebook/ent/dialect/sql"
+	entsql "entgo.io/ent/dialect/sql"
+
 	"moocss.com/gaea/internal/data/ent"
+	"moocss.com/gaea/internal/data/ent/migrate"
 	"moocss.com/gaea/pkg/conf"
+)
+
+// AsDefault alias for "default"
+const AsDefault = "default"
+
+var (
+	defaultSQL *ent.Client
+	sqlMap     sync.Map
 )
 
 // 初始化数据库
@@ -37,8 +48,8 @@ func InitDatabase() (client *ent.Client, err error) {
 	}
 
 	// 数据库调优
-	db.SetMaxIdleConns(maxIdleConns)                  // 用于设置连接池中空闲连接的最大数量。
-	db.SetMaxOpenConns(maxOpenConns)                 // 设置打开数据库连接的最大数量。
+	db.SetMaxIdleConns(maxIdleConns)       // 用于设置连接池中空闲连接的最大数量。
+	db.SetMaxOpenConns(maxOpenConns)       // 设置打开数据库连接的最大数量。
 	db.SetConnMaxLifetime(connMaxLifetime) // 设置了连接可复用的最大时间。
 
 	// ping test
@@ -58,10 +69,57 @@ func InitDatabase() (client *ent.Client, err error) {
 	client = ent.NewClient(opts...)
 
 	// Run Database Setup/Migrations
-	if err = client.Schema.Create(context.Background()); err != nil {
-		log.Print("failed creating schema resources")
-		return nil, err
+	ctx := context.Background()
+	mode := conf.Get("app.mode")
+	AutoMigration(ctx, client)
+	if mode == "debug" {
+		DebugMode(ctx, client)
 	}
 
+	// 全局数据库客户端服务
+	defaultSQL = client
+	sqlMap.Store("default", client)
+
 	return
+}
+
+// AutoMigration .
+func AutoMigration(ctx context.Context, client *ent.Client) error {
+	err := client.Schema.Create(context.Background())
+	if err != nil {
+		log.Printf("failed creating schema resources: %s", err.Error())
+		return err
+	}
+	return nil
+}
+
+// DebugMode .
+func DebugMode(ctx context.Context, client *ent.Client) error  {
+	err := client.Debug().Schema.Create(
+		ctx,
+		migrate.WithDropIndex(true),
+		migrate.WithDropColumn(true),
+	)
+	if err != nil {
+		log.Printf("failed creating schema resources: %s", err.Error())
+		return err
+	}
+	return nil
+}
+
+// GetDatabase 全局数据库客户端服务
+func GetDatabase(name ...string) *ent.Client {
+	if len(name) == 0 || name[0] == AsDefault {
+		if defaultSQL == nil {
+			log.Panicf("Invalid db `%s` \n", AsDefault)
+		}
+		return defaultSQL
+	}
+
+	v, ok := sqlMap.Load(name[0])
+	if !ok {
+		log.Panicf("Invalid db `%s` \n", name[0])
+	}
+
+	return v.(*ent.Client)
 }

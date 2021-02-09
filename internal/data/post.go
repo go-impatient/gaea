@@ -3,54 +3,49 @@ package data
 import (
 	"context"
 
-	"github.com/google/uuid"
-
 	"moocss.com/gaea/internal/biz"
 	"moocss.com/gaea/internal/data/ent"
 )
 
-var _ biz.UserRepository = (biz.UserRepository)(nil)
+var _ biz.PostRepository = (biz.PostRepository)(nil)
 
-// userRepository struct
-type userRepository struct {
-	dbClient *ent.Client
+// postRepository struct
+type postRepository struct {
+	db *ent.PostClient
 }
 
-// NewUserRepository returns an instance of `UserRepository`.
-func NewUserRepository(dbClient *ent.Client) biz.UserRepository {
-	return &userRepository{
-		dbClient: dbClient,
+// NewPostRepository returns an instance of `UserRepository`.
+func NewPostRepository(c *ent.Client) biz.PostRepository {
+	return &postRepository{
+		db: c.Post,
 	}
 }
 
-func (u *userRepository) Exist(ctx context.Context, model *ent.User) (bool, error) {
-	panic("implement me")
+// implement biz.PostRepository
+func (p *postRepository) List(ctx context.Context, limit, page int, sort string, model *biz.Post) (total int, users []*biz.Post, err error) {
+	return 0, nil, nil
 }
 
-func (u *userRepository) List(ctx context.Context, limit, page int, sort string, model *ent.User) (total int, users []*ent.User, err error) {
-	panic("implement me")
+func (p *postRepository) Get(ctx context.Context, id int) (*biz.Post, error) {
+	return nil, nil
 }
 
-func (u *userRepository) Get(ctx context.Context, id uuid.UUID) (*ent.User, error) {
-	panic("implement me")
+func (p *postRepository) Create(ctx context.Context, model *biz.Post) (*biz.Post, error) {
+	return nil, nil
 }
 
-func (u *userRepository) Create(ctx context.Context, model *ent.User) (*ent.User, error) {
-	panic("implement me")
+func (p *postRepository) Update(ctx context.Context, model *biz.Post) (*biz.Post, error) {
+	return nil, nil
 }
 
-func (u *userRepository) Update(ctx context.Context, model *ent.User) (*ent.User, error) {
-	panic("implement me")
+func (p postRepository) DeleteFull(ctx context.Context, model *biz.Post) (*biz.Post, error) {
+	return nil, nil
 }
 
-func (u *userRepository) DeleteFull(ctx context.Context, model *ent.User) (*ent.User, error) {
-	panic("implement me")
+func (p postRepository) Delete(ctx context.Context, id int) (*biz.Post, error) {
+	return nil, nil
 }
 
-func (u userRepository) Delete(ctx context.Context, id uuid.UUID) (*ent.User, error) {
-	panic("implement me")
-}
-
-func (u *userRepository) Count(ctx context.Context) (int, error) {
-	panic("implement me")
+func (p postRepository) Count(ctx context.Context) (int, error) {
+	return 0, nil
 }

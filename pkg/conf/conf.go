@@ -2,6 +2,7 @@
 package conf
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"strconv"
@@ -70,6 +71,7 @@ func init() {
 		if path, err = os.Getwd(); err != nil {
 			panic(err)
 		}
+		// 根目录下的config
 		path = path + "/config"
 		logger().WithField("path", path).Info("use default conf path")
 	}
@@ -89,6 +91,8 @@ func init() {
 		// logger().Infof("文件列表: %v", f.Name())
 
 		v := viper.New()
+		// Config's format: "json" | "toml" | "yaml" | "yml"
+		v.SetConfigType("yaml")
 		v.SetConfigFile(path + "/" + f.Name())
 		if err := v.ReadInConfig(); err != nil {
 			logger().Warnf("Using config file: %s [%s]\n", viper.ConfigFileUsed(), err)
@@ -209,6 +213,16 @@ func GetBool(key string) bool { return File("gaea").GetBool(key) }
 func (c *Conf) GetBool(key string) bool {
 	return c.viper.GetBool(key)
 }
+
+// Sub 返回新的Viper实例，代表该实例的子节点。
+func Sub(key string) (*viper.Viper, error) { return File("gaea").Sub(key) }
+func (c *Conf) Sub(key string) (*viper.Viper, error) {
+	if app := c.viper.Sub(key); app != nil {
+		return app, nil
+	}
+	return nil, fmt.Errorf("No found `%s` in the configuration", key)
+}
+
 
 // Set 设置配置，仅用于测试
 func Set(key string, value string) { File("gaea").Set(key, value) }

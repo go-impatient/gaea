@@ -2,34 +2,37 @@ package biz
 
 import (
 	"context"
-
-	"github.com/google/uuid"
-
-	"moocss.com/gaea/internal/data/ent"
+	"time"
 )
 
-// UserRepository interface
-type UserRepository interface {
-	Exist(ctx context.Context, model *ent.User) (bool, error)
-	List(ctx context.Context, limit, page int, sort string, model *ent.User) (total int, users []*ent.User, err error)
-	Get(ctx context.Context, id uuid.UUID) (*ent.User, error)
-	Create(ctx context.Context, model *ent.User) (*ent.User, error)
-	Update(ctx context.Context, model *ent.User) (*ent.User, error)
-	DeleteFull(ctx context.Context, model *ent.User) (*ent.User, error)
-	Delete(ctx context.Context, id uuid.UUID) (*ent.User, error)
+type Post struct {
+	ID int64
+	Title string
+	Content string
+	CTime time.Time
+}
+
+// PostRepository interface
+type PostRepository interface {
+	List(ctx context.Context, limit, page int, sort string, model *Post) (total int, users []*Post, err error)
+	Get(ctx context.Context, id int) (*Post, error)
+	Create(ctx context.Context, model *Post) (*Post, error)
+	Update(ctx context.Context, model *Post) (*Post, error)
+	DeleteFull(ctx context.Context, model *Post) (*Post, error)
+	Delete(ctx context.Context, id int) (*Post, error)
 	Count(ctx context.Context) (int, error)
 }
 
-//NewUserUsecase
-func NewUserUsecase(repo UserRepository) *UserUsecase {
-	return &UserUsecase{repo: repo}
+// NewPostUsecase
+func NewPostUsecase(repo PostRepository) *PostUsecase {
+	return &PostUsecase{repo: repo}
 }
 
-//UserUsecase
-type UserUsecase struct {
-	repo UserRepository
+//PostUsecase
+type PostUsecase struct {
+	repo PostRepository
 }
 
-func (uc *UserUsecase) CreateUser(ctx context.Context, u *ent.User) {
-	uc.repo.Create(ctx, u)
+func (uc *PostUsecase) CreatePost(ctx context.Context, post *Post) {
+	uc.repo.Create(ctx, post)
 }

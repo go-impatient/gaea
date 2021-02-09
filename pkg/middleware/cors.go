@@ -1,18 +1,16 @@
 package middleware
 
 import (
-	"context"
 	"net/http"
 	"strings"
 
 	"moocss.com/gaea/pkg/conf"
-	"moocss.com/gaea/pkg/log"
 )
 
 // Cors middleware
 func Cors(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Get(context.Background()).Println("cors before")
+		// log.Get(context.Background()).Println("cors before")
 
 		origin := r.Header.Get("Origin")
 		suffix := conf.Get("app.cors_origin_suffix")
@@ -29,6 +27,6 @@ func Cors(next http.Handler) http.Handler {
 		}
 		next.ServeHTTP(w, r)
 
-		log.Get(context.Background()).Println("cors after")
+		// log.Get(context.Background()).Println("cors after")
 	})
 }

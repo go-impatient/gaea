@@ -69,4 +69,7 @@ run-private:
 run-job:
 	export APP_ID=GaeaJob; go run main.go job --port=8081;
 
+wire:
+	wire ./cmd/server
+
 .PHONY: clean rpc util cmd

@@ -45,6 +45,10 @@ func main() {
 
 	conf.OnConfigChange(func() { reload <- 1 })
 	conf.WatchConfig()
+
+	// 注入App需要的依赖
+	// InitApp()
+
 	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT, syscall.SIGHUP)
 
 	startServer()
