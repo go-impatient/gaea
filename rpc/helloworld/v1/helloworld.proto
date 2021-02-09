@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package example.v1;
+package helloworld.v1;
 
 // FIXME 服务必须写注释
 service Helloworld {

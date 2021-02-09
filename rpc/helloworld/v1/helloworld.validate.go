@@ -1,4 +1,4 @@
-package example_v1
+package helloworld_v1
 
 import (
 	"fmt"

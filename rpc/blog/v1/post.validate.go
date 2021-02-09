@@ -35,7 +35,7 @@ type GetPostRequestValidationError struct {
 // Error satisfies the builtin error interface
 func (e GetPostRequestValidationError) Error() string {
 	return fmt.Sprintf(
-		"invalid GetPostRequestValidationError.%s: %s",
+		"invalid GetPostRequest.%s: %s",
 		e.field,
 		e.reason)
 }
@@ -48,15 +48,15 @@ func (m *GetPostReply) validate() error {
 	return nil
 }
 
-type GetPostReplyValidationError struct {
+type PostEchoRespValidationError struct {
 	field  string
 	reason string
 }
 
 // Error satisfies the builtin error interface
-func (e GetPostReplyValidationError) Error() string {
+func (e PostEchoRespValidationError) Error() string {
 	return fmt.Sprintf(
-		"invalid GetPostReply.%s: %s",
+		"invalid PostEchoResp.%s: %s",
 		e.field,
 		e.reason)
 }

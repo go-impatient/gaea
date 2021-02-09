@@ -51,13 +51,14 @@ make cmd
 ```
 ### 初次生成 rpc 代码
 ```bash
-./sniper rpc --server example --service helloworld
+go run cmd/sniper/main.go rpc --server auth --service user
 ```
 
 ### 生成 rpc 代码
 ```bash
 # 针对指定服务
 protoc --go_out=. --twirp_out=. echo.proto
+```
 
 # 针对所有服务
 find rpc -name '*.proto' -exec protoc --twirp_out=. --go_out=. {} \;
@@ -71,17 +72,17 @@ make rpc
 curl --request "POST" \
     --header "Content-Type: application/json" \
     --data '{"msg": "Hello World"}' \
-    http://localhost:8080/api/example.v1.Helloworld/Echo
+    http://localhost:8080/api/helloworld.v1.Helloworld/Echo
 ```
 
 ```bash
 echo 'msg:"Hello World"' \
-    | protoc --encode example.v1.HelloworldEchoReq ./rpc/example/v1/helloworld.proto \
+    | protoc --encode helloworld.v1.HelloworldEchoReq ./rpc/example/v1/helloworld.proto \
     | curl -s --request POST \
       --header "Content-Type: application/protobuf" \
       --data-binary @- \
-      http://localhost:8080/api/example.v1.Helloworld/Echo \
-    | protoc --decode example.v1.HelloworldEchoResp ./rpc/example/v1/helloworld.proto
+      http://localhost:8080/api/helloworld.v1.Helloworld/Echo \
+    | protoc --decode helloworld.v1.HelloworldEchoResp ./rpc/example/v1/helloworld.proto
 ```
 
 ### 批量修改文件内容

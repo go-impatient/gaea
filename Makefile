@@ -58,7 +58,7 @@ clean:
 	git clean -x -f -d
 
 rename:
-	go run cmd/sniper/main.go rename  --package $(name)	
+	go run cmd/sniper/main.go rename  --package $(name)
 
 run-public:
 	export APP_ID=GaeaApi; export DEPLOY_ENV=uat; go run main.go server --port=8080;
