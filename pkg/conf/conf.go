@@ -35,10 +35,12 @@ var (
 	Zone = "sh001"
 )
 
+// Conf .
 type Conf struct {
 	viper *viper.Viper
 }
 
+// Init .
 func Init() {
 	Hostname, _ = os.Hostname()
 	if appID := os.Getenv("APP_ID"); appID != "" {
@@ -81,6 +83,8 @@ func Init() {
 
 	Load(confPath)
 }
+
+// Load .
 func Load(confPath string) {
 	// 目标
 	src := file.NewFile(confPath)

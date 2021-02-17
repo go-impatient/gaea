@@ -7,9 +7,9 @@ import (
 // ProviderSet is service providers.
 var ProviderSet = wire.NewSet(NewHelloworldServer, NewUserServer, NewPostServer)
 
+// Services .
 type Services struct {
 	HelloworldServer *HelloworldServer
-	UserServer *UserServer
-	PostServer *PostServer
+	UserServer       *UserServer
+	PostServer       *PostServer
 }
-

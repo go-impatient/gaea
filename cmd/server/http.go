@@ -9,6 +9,7 @@ import (
 
 	blog_v1 "moocss.com/gaea/rpc/blog/v1"
 	helloworld_v1 "moocss.com/gaea/rpc/helloworld/v1"
+	user_v1 "moocss.com/gaea/rpc/user/v1"
 )
 
 var hooks = twirp.ChainHooks(
@@ -34,6 +35,12 @@ func initMux(mux *http.ServeMux, services *service.Services, isInternal bool) {
 		server := services.PostServer
 		handler := blog_v1.NewPostServer(server, hooks)
 		mux.Handle(blog_v1.PostPathPrefix, handler)
+	}
+
+	{
+		server := services.UserServer
+		handler := user_v1.NewUserServer(server, hooks)
+		mux.Handle(user_v1.UserPathPrefix, handler)
 	}
 }
 

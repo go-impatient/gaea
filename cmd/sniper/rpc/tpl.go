@@ -55,6 +55,10 @@ import (
 )
 
 type {{.Service}}Server struct{}
+
+func New{{.Service}}Server() *{{.Service}}Server {
+	return &{{.Service}}Server{}
+}
 `
 
 	funcTpl = `
@@ -74,7 +78,7 @@ func (s *{{.Service}}Server) Echo(ctx context.Context, req *pb.{{.Service}}EchoR
 package main
 func main() {
 	{
-		server := &service.{{.Service}}Server{}
+		server := services.{{.Service}}Server
 		handler := {{.Server}}_v{{.Version}}.New{{.Service}}Server(server, hooks)
 		mux.Handle({{.Server}}_v{{.Version}}.{{.Service}}PathPrefix, handler)
 	}
