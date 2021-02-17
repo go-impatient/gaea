@@ -12,6 +12,7 @@ import (
 	"moocss.com/gaea/internal/data/ent"
 	"moocss.com/gaea/internal/data/ent/migrate"
 	"moocss.com/gaea/pkg/conf"
+	logx "moocss.com/gaea/pkg/log"
 )
 
 // AsDefault alias for "default"
@@ -23,7 +24,7 @@ var (
 )
 
 // 初始化数据库
-func InitDatabase() (client *ent.Client, err error) {
+func InitDatabase(logger logx.Logger) (client *ent.Client, err error) {
 	dialect := conf.Get("database.dialect")
 	dsn := conf.Get("database.url")
 	var db *sql.DB
@@ -64,16 +65,16 @@ func InitDatabase() (client *ent.Client, err error) {
 	logging := conf.GetBool("database.logging")
 	if logging {
 		opts = append(opts, ent.Debug())
-		opts = append(opts, ent.Log(log.Print))
+		opts = append(opts, ent.Log(logger.Print))
 	}
 	client = ent.NewClient(opts...)
 
 	// Run Database Setup/Migrations
 	ctx := context.Background()
 	mode := conf.Get("app.mode")
-	AutoMigration(ctx, client)
+	AutoMigration(ctx, client, logger)
 	if mode == "debug" {
-		DebugMode(ctx, client)
+		DebugMode(ctx, client, logger)
 	}
 
 	// 全局数据库客户端服务
@@ -84,24 +85,24 @@ func InitDatabase() (client *ent.Client, err error) {
 }
 
 // AutoMigration .
-func AutoMigration(ctx context.Context, client *ent.Client) error {
+func AutoMigration(ctx context.Context, client *ent.Client, logger logx.Logger) error {
 	err := client.Schema.Create(context.Background())
 	if err != nil {
-		log.Printf("failed creating schema resources: %s", err.Error())
+		logger.Printf("failed creating schema resources: %s", err.Error())
 		return err
 	}
 	return nil
 }
 
 // DebugMode .
-func DebugMode(ctx context.Context, client *ent.Client) error  {
+func DebugMode(ctx context.Context, client *ent.Client, logger logx.Logger) error {
 	err := client.Debug().Schema.Create(
 		ctx,
 		migrate.WithDropIndex(true),
 		migrate.WithDropColumn(true),
 	)
 	if err != nil {
-		log.Printf("failed creating schema resources: %s", err.Error())
+		logger.Printf("failed creating schema resources: %s", err.Error())
 		return err
 	}
 	return nil

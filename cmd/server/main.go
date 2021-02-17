@@ -12,12 +12,14 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+
 	"moocss.com/gaea/pkg"
 	"moocss.com/gaea/pkg/conf"
 	"moocss.com/gaea/pkg/log"
 	"moocss.com/gaea/pkg/middleware"
-
-	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"moocss.com/gaea/pkg/middleware/cors"
+	"moocss.com/gaea/pkg/middleware/recovery"
 )
 
 var server *http.Server
@@ -47,7 +49,7 @@ func main() {
 	conf.WatchConfig()
 
 	// 注入App需要的依赖
-	// InitApp()
+	// di.InitApp()
 
 	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT, syscall.SIGHUP)
 
@@ -94,8 +96,7 @@ func startServer() {
 
 	// 中间件
 	m := middleware.NewMiddleware()
-	m.Use(middleware.Recovery)
-	m.Use(middleware.Cors)
+	m.Use(cors.CORS, recovery.Recovery)
 	panicHandler := m.Add(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		mux.ServeHTTP(w, r)
 	}))

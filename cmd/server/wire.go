@@ -3,6 +3,11 @@
 
 package server
 
-func InitApp() {
+import (
+	"github.com/google/wire"
+)
 
+//go:generate wire
+func InitApp() {
+	panic(wire.Build())
 }

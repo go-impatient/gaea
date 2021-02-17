@@ -4,16 +4,20 @@ import (
 	"context"
 
 	"moocss.com/gaea/internal/biz"
+	"moocss.com/gaea/pkg/log"
 	pb "moocss.com/gaea/rpc/blog/v1"
 )
 
 type PostServer struct {
-	puc *biz.PostUsecase
+	post *biz.PostUsecase
+
+	log log.Logger
 }
 
-func NewPostServer(pr biz.PostRepository) *PostServer {
+func NewPostServer(post *biz.PostUsecase, logger log.Logger) *PostServer {
 	return &PostServer{
-		puc: biz.NewPostUsecase(pr),
+		post: post,
+		log: logger,
 	}
 }
 
@@ -24,7 +28,7 @@ func (s *PostServer) CreatePost(ctx context.Context, req *pb.CreatePostRequest) 
 		Content: req.GetContent(),
 	}
 
-	s.puc.CreatePost(ctx, post)
+	s.post.CreatePost(ctx, post)
 
 	return &pb.CreatePostReply{}, nil
 }
