@@ -7,8 +7,8 @@ import (
 	"moocss.com/gaea/pkg/conf"
 )
 
-// Cors middleware
-func Cors(next http.Handler) http.Handler {
+// CORS middleware
+func CORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// log.Get(context.Background()).Println("cors before")
 

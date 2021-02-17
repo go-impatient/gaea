@@ -1,11 +1,12 @@
 package middleware
 
 import (
+	"net/http"
+	"runtime"
+
 	"moocss.com/gaea/pkg/ctxkit"
 	"moocss.com/gaea/pkg/log"
 	"moocss.com/gaea/pkg/trace"
-	"net/http"
-	"runtime"
 )
 
 // Recovery is a server middleware that recovers from any panics.
