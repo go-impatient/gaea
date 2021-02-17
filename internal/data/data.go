@@ -19,7 +19,7 @@ type Data struct {
 
 // NewData .
 func NewData(logger log.Logger) (*Data, error) {
-	client, err := database.InitDatabase(logger)
+	client, err := database.Init(logger)
 	if err != nil {
 		dialect := conf.Get("database.dialect")
 		logger.Errorf("failed opening connection to %s: %v", dialect, err)

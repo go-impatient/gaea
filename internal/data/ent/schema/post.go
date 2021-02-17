@@ -13,6 +13,7 @@ type Post struct {
 // Fields of the Post.
 func (Post) Fields() []ent.Field {
 	return []ent.Field{
+		field.Uint64("id"),
 		field.String("title"),
 		field.String("content"),
 		field.Time("ctime"),

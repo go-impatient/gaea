@@ -45,11 +45,12 @@ func main() {
 	reload := make(chan int, 1)
 	stop := make(chan os.Signal, 1)
 
+	// 初始化配置文件
+	conf.Init()
 	conf.OnConfigChange(func() { reload <- 1 })
 	conf.WatchConfig()
-
-	// 注入App需要的依赖
-	// di.InitApp()
+	logLevel := conf.Get("LOG_LEVEL")
+	logger.Infof("LOG_LEVEL: %s", logLevel)
 
 	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT, syscall.SIGHUP)
 
@@ -77,13 +78,20 @@ func startServer() {
 
 	rand.Seed(int64(time.Now().Nanosecond()))
 
+	// 注入App需要的依赖
+	services, err := InitApp(logger)
+	if err != nil {
+		panic(err)
+	}
+
+
 	mux := http.NewServeMux()
 
 	timeout := 600 * time.Millisecond
-	initMux(mux, isInternal)
+	initMux(mux, services, isInternal)
 
 	if isInternal {
-		initInternalMux(mux)
+		initInternalMux(mux, services)
 
 		if d := conf.GetDuration("INTERNAL_API_TIMEOUT"); d > 0 {
 			timeout = d

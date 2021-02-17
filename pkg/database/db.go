@@ -8,6 +8,7 @@ import (
 	"time"
 
 	entsql "entgo.io/ent/dialect/sql"
+	_ "github.com/go-sql-driver/mysql"
 
 	"moocss.com/gaea/internal/data/ent"
 	"moocss.com/gaea/internal/data/ent/migrate"
@@ -24,26 +25,28 @@ var (
 )
 
 // 初始化数据库
-func InitDatabase(logger logx.Logger) (client *ent.Client, err error) {
-	dialect := conf.Get("database.dialect")
-	dsn := conf.Get("database.url")
+func Init(logger logx.Logger) (client *ent.Client, err error) {
+	config := conf.File("config")
+	dialect := config.Get("database.dialect")
+	dsn := config.Get("database.dsn")
+
 	var db *sql.DB
 	db, err = sql.Open(dialect, dsn)
 	if err != nil {
 		return
 	}
 
-	maxOpenConns := conf.GetInt("database.max_open_conns")
+	maxOpenConns := config.GetInt("database.max_open_conns")
 	if maxOpenConns < 0 {
 		maxOpenConns = 100
 	}
 
-	maxIdleConns := conf.GetInt("database.max_idle_conns")
+	maxIdleConns := config.GetInt("database.max_idle_conns")
 	if maxIdleConns < 0 {
 		maxIdleConns = 10
 	}
 
-	connMaxLifetime := conf.GetDuration("database.conn_max_lifetime")
+	connMaxLifetime := config.GetDuration("database.conn_max_lifetime")
 	if connMaxLifetime < 0 {
 		connMaxLifetime = 10 * time.Minute
 	}
@@ -62,7 +65,7 @@ func InitDatabase(logger logx.Logger) (client *ent.Client, err error) {
 	drv := entsql.OpenDB(dialect, db)
 
 	opts := []ent.Option{ent.Driver(drv)}
-	logging := conf.GetBool("database.logging")
+	logging := config.GetBool("database.logging")
 	if logging {
 		opts = append(opts, ent.Debug())
 		opts = append(opts, ent.Log(logger.Print))
@@ -71,7 +74,7 @@ func InitDatabase(logger logx.Logger) (client *ent.Client, err error) {
 
 	// Run Database Setup/Migrations
 	ctx := context.Background()
-	mode := conf.Get("app.mode")
+	mode := config.Get("app.mode")
 	AutoMigration(ctx, client, logger)
 	if mode == "debug" {
 		DebugMode(ctx, client, logger)

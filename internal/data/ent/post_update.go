@@ -107,7 +107,7 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   post.Table,
 			Columns: post.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUint64,
 				Column: post.FieldID,
 			},
 		},
@@ -238,7 +238,7 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 			Table:   post.Table,
 			Columns: post.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUint64,
 				Column: post.FieldID,
 			},
 		},

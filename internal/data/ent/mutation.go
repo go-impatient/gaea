@@ -32,7 +32,7 @@ type PostMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int
+	id            *uint64
 	title         *string
 	content       *string
 	ctime         *time.Time
@@ -62,7 +62,7 @@ func newPostMutation(c config, op Op, opts ...postOption) *PostMutation {
 }
 
 // withPostID sets the ID field of the mutation.
-func withPostID(id int) postOption {
+func withPostID(id uint64) postOption {
 	return func(m *PostMutation) {
 		var (
 			err   error
@@ -112,9 +112,15 @@ func (m PostMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Post entities.
+func (m *PostMutation) SetID(id uint64) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID
 // is only available if it was provided to the builder.
-func (m *PostMutation) ID() (id int, exists bool) {
+func (m *PostMutation) ID() (id uint64, exists bool) {
 	if m.id == nil {
 		return
 	}

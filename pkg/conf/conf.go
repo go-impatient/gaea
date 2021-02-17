@@ -3,8 +3,8 @@ package conf
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
+	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -12,9 +12,10 @@ import (
 	"github.com/fsnotify/fsnotify"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+
+	"moocss.com/gaea/pkg/conf/file"
 )
 
-var path string
 var files map[string]*Conf
 
 var (
@@ -34,7 +35,11 @@ var (
 	Zone = "sh001"
 )
 
-func init() {
+type Conf struct {
+	viper *viper.Viper
+}
+
+func Init() {
 	Hostname, _ = os.Hostname()
 	if appID := os.Getenv("APP_ID"); appID != "" {
 		AppID = appID
@@ -63,37 +68,39 @@ func init() {
 		IsDevEnv = true
 	}
 
-	path = os.Getenv("CONF_PATH")
-
-	if path == "" {
+	confPath := os.Getenv("CONF_PATH")
+	var err error
+	if confPath == "" {
 		logger().Warn("env CONF_PATH is empty")
-		var err error
-		if path, err = os.Getwd(); err != nil {
+		if confPath, err = os.Getwd(); err != nil {
 			panic(err)
 		}
-		// 根目录下的config
-		path = path + "/config"
-		logger().WithField("path", path).Info("use default conf path")
+		logger().WithField("path", confPath).Info("use default conf path")
+		confPath += "/config"
 	}
 
-	fs, err := ioutil.ReadDir(path)
+	Load(confPath)
+}
+func Load(confPath string) {
+	// 目标
+	src := file.NewFile(confPath)
+	// 目标下的所有配置文件
+	fs, err := src.Load()
 	if err != nil {
 		panic(err)
 	}
-
 	files = make(map[string]*Conf, len(fs))
-
 	for _, f := range fs {
-		if !strings.HasSuffix(f.Name(), ".yaml") {
+		if !strings.HasSuffix(f, ".yaml") {
 			continue
 		}
 
-		// logger().Infof("文件列表: %v", f.Name())
+		logger().WithField("config_file", f).Info("config file")
 
 		v := viper.New()
 		// Config's format: "json" | "toml" | "yaml" | "yml"
-		v.SetConfigType("yaml")
-		v.SetConfigFile(path + "/" + f.Name())
+		// v.SetConfigType("yaml")
+		v.SetConfigFile(f)
 		if err := v.ReadInConfig(); err != nil {
 			logger().Warnf("Using config file: %s [%s]\n", viper.ConfigFileUsed(), err)
 			panic(err)
@@ -102,13 +109,9 @@ func init() {
 		// 读取匹配的环境变量
 		v.AutomaticEnv()
 
-		name := strings.TrimSuffix(f.Name(), ".yaml")
+		name := strings.TrimSuffix(path.Base(f), ".yaml")
 		files[name] = &Conf{v}
 	}
-}
-
-type Conf struct {
-	viper *viper.Viper
 }
 
 // GetFloat64 获取浮点数配置
@@ -222,7 +225,6 @@ func (c *Conf) Sub(key string) (*viper.Viper, error) {
 	}
 	return nil, fmt.Errorf("No found `%s` in the configuration", key)
 }
-
 
 // Set 设置配置，仅用于测试
 func Set(key string, value string) { File("gaea").Set(key, value) }

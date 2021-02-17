@@ -8,13 +8,16 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"moocss.com/gaea/internal/data/ent"
+	"moocss.com/gaea/pkg/conf"
+	"moocss.com/gaea/pkg/log"
 )
 
 var dbClient *ent.Client
 var err error
+var logger = log.Get(context.Background())
 
 func TestMain(m *testing.M) {
-	dbClient, err = InitDatabase()
+	dbClient, err = Init(logger)
 
 	code := m.Run()
 	if dbClient != nil {
@@ -25,14 +28,15 @@ func TestMain(m *testing.M) {
 }
 
 func TestGetConnection(t *testing.T) {
-	dbClient, err = InitDatabase()
+	conf.Load("../../config")
+
+	dbClient, err = Init(logger)
 	assert.Nil(t, err)
 	assert.NotNil(t, dbClient)
 	assert.NotNil(t, GetDatabase())
 	assert.Equal(t, GetDatabase(), dbClient)
 	assert.Nil(t, dbClient.Close())
 }
-
 
 func TestDatabaseClient(t *testing.T) {
 	if err != nil {

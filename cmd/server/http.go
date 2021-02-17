@@ -23,19 +23,19 @@ var hooks = twirp.ChainHooks(
 // 	hook.NewAuth(),
 // )
 
-func initMux(mux *http.ServeMux, isInternal bool) {
+func initMux(mux *http.ServeMux, services *service.Services, isInternal bool) {
 	{
-		server := &service.HelloworldServer{}
+		server := services.HelloworldServer
 		handler := helloworld_v1.NewHelloworldServer(server, hooks)
 		mux.Handle(helloworld_v1.HelloworldPathPrefix, handler)
 	}
 
 	{
-		server := &service.PostServer{}
+		server := services.PostServer
 		handler := blog_v1.NewPostServer(server, hooks)
 		mux.Handle(blog_v1.PostPathPrefix, handler)
 	}
 }
 
-func initInternalMux(mux *http.ServeMux) {
+func initInternalMux(mux *http.ServeMux, services *service.Services) {
 }

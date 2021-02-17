@@ -76,8 +76,8 @@ func (pq *PostQuery) FirstX(ctx context.Context) *Post {
 
 // FirstID returns the first Post ID from the query.
 // Returns a *NotFoundError when no Post ID was found.
-func (pq *PostQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (pq *PostQuery) FirstID(ctx context.Context) (id uint64, err error) {
+	var ids []uint64
 	if ids, err = pq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -89,7 +89,7 @@ func (pq *PostQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (pq *PostQuery) FirstIDX(ctx context.Context) int {
+func (pq *PostQuery) FirstIDX(ctx context.Context) uint64 {
 	id, err := pq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -127,8 +127,8 @@ func (pq *PostQuery) OnlyX(ctx context.Context) *Post {
 // OnlyID is like Only, but returns the only Post ID in the query.
 // Returns a *NotSingularError when exactly one Post ID is not found.
 // Returns a *NotFoundError when no entities are found.
-func (pq *PostQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (pq *PostQuery) OnlyID(ctx context.Context) (id uint64, err error) {
+	var ids []uint64
 	if ids, err = pq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -144,7 +144,7 @@ func (pq *PostQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (pq *PostQuery) OnlyIDX(ctx context.Context) int {
+func (pq *PostQuery) OnlyIDX(ctx context.Context) uint64 {
 	id, err := pq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -170,8 +170,8 @@ func (pq *PostQuery) AllX(ctx context.Context) []*Post {
 }
 
 // IDs executes the query and returns a list of Post IDs.
-func (pq *PostQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
+func (pq *PostQuery) IDs(ctx context.Context) ([]uint64, error) {
+	var ids []uint64
 	if err := pq.Select(post.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -179,7 +179,7 @@ func (pq *PostQuery) IDs(ctx context.Context) ([]int, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (pq *PostQuery) IDsX(ctx context.Context) []int {
+func (pq *PostQuery) IDsX(ctx context.Context) []uint64 {
 	ids, err := pq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -345,7 +345,7 @@ func (pq *PostQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   post.Table,
 			Columns: post.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUint64,
 				Column: post.FieldID,
 			},
 		},

@@ -2,13 +2,16 @@ package service
 
 import (
 	"context"
-
 	pb "moocss.com/gaea/rpc/helloworld/v1"
 )
 
 // HelloworldServer 实现 /helloworld.v1.Helloworld 服务
 // FIXME 服务必须写注释
 type HelloworldServer struct{}
+
+func NewHelloworldServer() *HelloworldServer {
+	return &HelloworldServer{}
+}
 
 // Echo 实现 /helloworld.v1.Helloworld/Echo 接口
 // FIXME 接口必须写注释

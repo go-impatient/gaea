@@ -20,7 +20,7 @@ app:
 # 数据库配置
 database:
   dialect: "mysql"
-  dsn: "foo:bar@tcp(127.0.0.1:3306)/baz?charset=utf8&parseTime=True&loc=Local"
+  dsn: "root:root@tcp(localhost:3306)/test?charset=utf8&parseTime=True&loc=Local"
   max_idle_conns: 10
   max_open_conns: 100
   conn_max_lifetime: 1h
