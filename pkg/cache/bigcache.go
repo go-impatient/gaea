@@ -10,7 +10,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-var _ Client = &bigCacheClient{}
+var _ Client = (*bigCacheClient)(nil)
 
 type bigCacheClient struct {
 	client *bigcache.BigCache

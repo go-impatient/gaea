@@ -2,24 +2,24 @@ package cache
 
 import (
 	"context"
+	"github.com/Shopify/go-encoding"
 	"math"
 	"net"
 	"time"
 
-	"github.com/pkg/errors"
-
 	"github.com/bradfitz/gomemcache/memcache"
+	"github.com/pkg/errors"
 )
 
-var _ Client = &memcacheClient{}
+var _ Client = (*memcacheClient)(nil)
 
-func NewMemcacheClient(c *memcache.Client, encoding Encoding) *memcacheClient {
-	return &memcacheClient{client: c, encoding: encoding}
+func NewMemcacheClient(c *memcache.Client, enc encoding.ValueEncoding) Client {
+	return &memcacheClient{client: c, encoding: enc}
 }
 
 type memcacheClient struct {
 	client   *memcache.Client
-	encoding Encoding
+	encoding encoding.ValueEncoding
 }
 
 // Clear clear all cached in memcache.

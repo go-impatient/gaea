@@ -57,8 +57,10 @@ var (
 var defBuckets = []float64{.005, .01, .025, .05, .1, .25, .5, 1}
 
 func init() {
+	var namespace = "gaea"
+
 	RPCDurationsSeconds = prometheus.NewHistogramVec(prometheus.HistogramOpts{
-		Namespace:   "sniper",
+		Namespace:   namespace,
 		Name:        "rpc_durations_seconds",
 		Help:        "RPC latency distributions",
 		Buckets:     defBuckets,
@@ -67,7 +69,7 @@ func init() {
 	prometheus.MustRegister(RPCDurationsSeconds)
 
 	DBDurationsSeconds = prometheus.NewHistogramVec(prometheus.HistogramOpts{
-		Namespace:   "sniper",
+		Namespace:   namespace,
 		Name:        "db_durations_seconds",
 		Help:        "MySQL latency distributions",
 		Buckets:     defBuckets,
@@ -76,7 +78,7 @@ func init() {
 	prometheus.MustRegister(DBDurationsSeconds)
 
 	MCDurationsSeconds = prometheus.NewHistogramVec(prometheus.HistogramOpts{
-		Namespace:   "sniper",
+		Namespace:   namespace,
 		Name:        "mc_durations_seconds",
 		Help:        "MemCache latency distributions",
 		Buckets:     defBuckets,
@@ -85,7 +87,7 @@ func init() {
 	prometheus.MustRegister(MCDurationsSeconds)
 
 	RedisDurationsSeconds = prometheus.NewHistogramVec(prometheus.HistogramOpts{
-		Namespace:   "sniper",
+		Namespace:   namespace,
 		Name:        "redis_durations_seconds",
 		Help:        "Redis latency distributions",
 		Buckets:     defBuckets,
@@ -94,7 +96,7 @@ func init() {
 	prometheus.MustRegister(RedisDurationsSeconds)
 
 	HTTPDurationsSeconds = prometheus.NewHistogramVec(prometheus.HistogramOpts{
-		Namespace:   "sniper",
+		Namespace:   namespace,
 		Name:        "http_durations_seconds",
 		Help:        "HTTP latency distributions",
 		Buckets:     defBuckets,
@@ -103,7 +105,7 @@ func init() {
 	prometheus.MustRegister(HTTPDurationsSeconds)
 
 	LogTotal = prometheus.NewCounterVec(prometheus.CounterOpts{
-		Namespace:   "sniper",
+		Namespace:   namespace,
 		Name:        "log_total",
 		Help:        "log total",
 		ConstLabels: map[string]string{"app": conf.AppID},
@@ -111,7 +113,7 @@ func init() {
 	prometheus.MustRegister(LogTotal)
 
 	JobTotal = prometheus.NewCounterVec(prometheus.CounterOpts{
-		Namespace:   "sniper",
+		Namespace:   namespace,
 		Name:        "job_total",
 		Help:        "job total",
 		ConstLabels: map[string]string{"app": conf.AppID},
@@ -119,7 +121,7 @@ func init() {
 	prometheus.MustRegister(JobTotal)
 
 	MQDurationsSeconds = prometheus.NewHistogramVec(prometheus.HistogramOpts{
-		Namespace:   "sniper",
+		Namespace:   namespace,
 		Name:        "mq_durations_seconds",
 		Help:        "Databus latency distributions",
 		Buckets:     defBuckets,
@@ -128,7 +130,7 @@ func init() {
 	prometheus.MustRegister(MQDurationsSeconds)
 
 	NetPoolHits = prometheus.NewCounterVec(prometheus.CounterOpts{
-		Namespace:   "sniper",
+		Namespace:   namespace,
 		Name:        "net_pool_hits",
 		Help:        "net pool hits",
 		ConstLabels: map[string]string{"app": conf.AppID},
@@ -136,7 +138,7 @@ func init() {
 	prometheus.MustRegister(NetPoolHits)
 
 	NetPoolMisses = prometheus.NewCounterVec(prometheus.CounterOpts{
-		Namespace:   "sniper",
+		Namespace:   namespace,
 		Name:        "net_pool_misses",
 		Help:        "net pool misses",
 		ConstLabels: map[string]string{"app": conf.AppID},
@@ -144,7 +146,7 @@ func init() {
 	prometheus.MustRegister(NetPoolMisses)
 
 	NetPoolTimeouts = prometheus.NewCounterVec(prometheus.CounterOpts{
-		Namespace:   "sniper",
+		Namespace:   namespace,
 		Name:        "net_pool_timeouts",
 		Help:        "net pool timeouts",
 		ConstLabels: map[string]string{"app": conf.AppID},
@@ -152,7 +154,7 @@ func init() {
 	prometheus.MustRegister(NetPoolTimeouts)
 
 	NetPoolStale = prometheus.NewCounterVec(prometheus.CounterOpts{
-		Namespace:   "sniper",
+		Namespace:   namespace,
 		Name:        "net_pool_stale",
 		Help:        "net pool stale",
 		ConstLabels: map[string]string{"app": conf.AppID},
@@ -160,7 +162,7 @@ func init() {
 	prometheus.MustRegister(NetPoolStale)
 
 	NetPoolTotal = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Namespace:   "sniper",
+		Namespace:   namespace,
 		Name:        "net_pool_total",
 		Help:        "net pool total",
 		ConstLabels: map[string]string{"app": conf.AppID},
@@ -168,7 +170,7 @@ func init() {
 	prometheus.MustRegister(NetPoolTotal)
 
 	NetPoolIdle = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Namespace:   "sniper",
+		Namespace:   namespace,
 		Name:        "net_pool_idle",
 		Help:        "net pool idle",
 		ConstLabels: map[string]string{"app": conf.AppID},
@@ -176,7 +178,7 @@ func init() {
 	prometheus.MustRegister(NetPoolIdle)
 
 	DBMaxOpenConnections = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Namespace:   "sniper",
+		Namespace:   namespace,
 		Name:        "db_max_open_conns",
 		Help:        "db max open connections",
 		ConstLabels: map[string]string{"app": conf.AppID},
@@ -184,7 +186,7 @@ func init() {
 	prometheus.MustRegister(DBMaxOpenConnections)
 
 	DBOpenConnections = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Namespace:   "sniper",
+		Namespace:   namespace,
 		Name:        "db_open_conns",
 		Help:        "db open connections",
 		ConstLabels: map[string]string{"app": conf.AppID},
@@ -192,7 +194,7 @@ func init() {
 	prometheus.MustRegister(DBOpenConnections)
 
 	DBInUseConnections = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Namespace:   "sniper",
+		Namespace:   namespace,
 		Name:        "db_in_use_conns",
 		Help:        "db in use connections",
 		ConstLabels: map[string]string{"app": conf.AppID},
@@ -200,7 +202,7 @@ func init() {
 	prometheus.MustRegister(DBInUseConnections)
 
 	DBIdleConnections = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Namespace:   "sniper",
+		Namespace:   namespace,
 		Name:        "db_idle_conns",
 		Help:        "db idle connections",
 		ConstLabels: map[string]string{"app": conf.AppID},
@@ -208,7 +210,7 @@ func init() {
 	prometheus.MustRegister(DBIdleConnections)
 
 	DBWaitCount = prometheus.NewCounterVec(prometheus.CounterOpts{
-		Namespace:   "sniper",
+		Namespace:   namespace,
 		Name:        "db_wait_count",
 		Help:        "db wait count",
 		ConstLabels: map[string]string{"app": conf.AppID},
@@ -216,7 +218,7 @@ func init() {
 	prometheus.MustRegister(DBWaitCount)
 
 	DBMaxIdleClosed = prometheus.NewCounterVec(prometheus.CounterOpts{
-		Namespace:   "sniper",
+		Namespace:   namespace,
 		Name:        "db_max_idle_closed",
 		Help:        "db max idle closed",
 		ConstLabels: map[string]string{"app": conf.AppID},
@@ -224,7 +226,7 @@ func init() {
 	prometheus.MustRegister(DBMaxIdleClosed)
 
 	DBMaxLifetimeClosed = prometheus.NewCounterVec(prometheus.CounterOpts{
-		Namespace:   "sniper",
+		Namespace:   namespace,
 		Name:        "db_max_life_time_closed",
 		Help:        "db max life time closed",
 		ConstLabels: map[string]string{"app": conf.AppID},

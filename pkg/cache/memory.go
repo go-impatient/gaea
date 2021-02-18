@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+var _ Client = (*memoryClient)(nil)
+
 type memoryData struct {
 	data       interface{}
 	expiration time.Time
@@ -14,8 +16,6 @@ type memoryData struct {
 type memoryClient struct {
 	data sync.Map
 }
-
-var _ Client = &memoryClient{}
 
 // NewMemoryClient returns a Client that only stores in memory.
 // Useful for stubbing tests.

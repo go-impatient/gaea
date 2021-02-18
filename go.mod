@@ -5,11 +5,15 @@ go 1.15
 require (
 	bou.ke/monkey v1.0.1
 	entgo.io/ent v0.6.0
+	github.com/Shopify/go-encoding v0.0.0-20201104202705-fca102d33876 // indirect
+	github.com/allegro/bigcache v1.2.1 // indirect
+	github.com/bradfitz/gomemcache v0.0.0-20190913173617-a41fca850d0b // indirect
 	github.com/codahale/hdrhistogram v0.0.0-20161010025455-3a0bb77429bd // indirect
 	github.com/cpuguy83/go-md2man v1.0.10 // indirect
 	github.com/dave/dst v0.25.5
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/fsnotify/fsnotify v1.4.7
+	github.com/fsnotify/fsnotify v1.4.9
+	github.com/go-redis/redis/v8 v8.5.0 // indirect
 	github.com/go-sql-driver/mysql v1.5.1-0.20200311113236-681ffa848bae
 	github.com/google/uuid v1.2.0
 	github.com/google/wire v0.5.0
@@ -32,6 +36,6 @@ require (
 	github.com/ugorji/go/codec v0.0.0-20181204163529-d75b2dcb6bc8 // indirect
 	go.uber.org/atomic v1.5.1 // indirect
 	go.uber.org/automaxprocs v1.3.0
-	golang.org/x/net v0.0.0-20201110031124-69a78807bb2b
+	golang.org/x/net v0.0.0-20201202161906-c7110b5ffcbb
 	google.golang.org/protobuf v1.25.0
 )
