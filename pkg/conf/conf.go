@@ -10,10 +10,10 @@ import (
 	"time"
 
 	"github.com/fsnotify/fsnotify"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 
 	"moocss.com/gaea/pkg/conf/file"
+	"moocss.com/gaea/pkg/log"
 )
 
 var files map[string]*Conf
@@ -41,24 +41,26 @@ type Conf struct {
 }
 
 // Init .
-func Init() {
+func Init(logger log.Logger) {
+	log := log.NewHelper("conf", logger)
+
 	Hostname, _ = os.Hostname()
 	if appID := os.Getenv("APP_ID"); appID != "" {
 		AppID = appID
 	} else {
-		logger().Warn("env APP_ID is empty")
+		log.Warn("env APP_ID is empty")
 	}
 
 	if env := os.Getenv("DEPLOY_ENV"); env != "" {
 		Env = env
 	} else {
-		logger().Warn("env DEPLOY_ENV is empty")
+		log.Warn("env DEPLOY_ENV is empty")
 	}
 
 	if zone := os.Getenv("ZONE"); zone != "" {
 		Zone = zone
 	} else {
-		logger().Warn("env ZONE is empty")
+		log.Warn("env ZONE is empty")
 	}
 
 	switch Env {
@@ -71,21 +73,25 @@ func Init() {
 	}
 
 	confPath := os.Getenv("CONF_PATH")
+
 	var err error
 	if confPath == "" {
-		logger().Warn("env CONF_PATH is empty")
+		log.Warn("env CONF_PATH is empty")
 		if confPath, err = os.Getwd(); err != nil {
 			panic(err)
 		}
-		logger().WithField("path", confPath).Info("use default conf path")
+		log.Infow(
+			"use default conf path",
+			confPath,
+		)
 		confPath += "/config"
 	}
 
-	Load(confPath)
+	Load(confPath, log)
 }
 
 // Load .
-func Load(confPath string) {
+func Load(confPath string, log *log.Helper) {
 	// 目标
 	src := file.NewFile(confPath)
 	// 目标下的所有配置文件
@@ -99,14 +105,14 @@ func Load(confPath string) {
 			continue
 		}
 
-		logger().WithField("config_file", f).Info("config file")
+		log.Infof("config file %s", f)
 
 		v := viper.New()
 		// Config's format: "json" | "toml" | "yaml" | "yml"
 		// v.SetConfigType("yaml")
 		v.SetConfigFile(f)
 		if err := v.ReadInConfig(); err != nil {
-			logger().Warnf("Using config file: %s [%s]\n", viper.ConfigFileUsed(), err)
+			log.Warnf("Using config file: %s [%s]\n", viper.ConfigFileUsed(), err)
 			panic(err)
 		}
 
@@ -260,27 +266,4 @@ func WatchConfig() {
 	for _, v := range files {
 		v.viper.WatchConfig()
 	}
-}
-
-var levels = map[string]logrus.Level{
-	"panic": logrus.PanicLevel,
-	"fatal": logrus.FatalLevel,
-	"error": logrus.ErrorLevel,
-	"warn":  logrus.WarnLevel,
-	"info":  logrus.InfoLevel,
-	"debug": logrus.DebugLevel,
-}
-
-func logger() *logrus.Entry {
-	if level, ok := levels[os.Getenv("LOG_LEVEL")]; ok {
-		logrus.SetLevel(level)
-	} else {
-		logrus.SetLevel(logrus.DebugLevel)
-	}
-
-	return logrus.WithFields(logrus.Fields{
-		"app_id":      AppID,
-		"instance_id": Hostname,
-		"env":         Env,
-	})
 }

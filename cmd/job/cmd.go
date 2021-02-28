@@ -253,31 +253,35 @@ func regjob(name string, spec string, job func(ctx context.Context) error, tasks
 		span.SetTag("name", name)
 		ctx = ctxkit.WithTraceID(ctx, trace.GetTraceID(ctx))
 
-		logger := log.Get(ctx)
+		logger := log.NewLogrusLogger(os.Stdout)
+		log := log.NewHelper("cron", logger)
 
 		defer func() {
 			if r := recover(); r != nil {
 				err = errors.New(fmt.Sprintf("%+v stack: %s", r, string(debug.Stack())))
-				logger.Error(err)
+				log.Error(err)
 			}
 		}()
 
 		if conf.GetBool("features.job.enabled") {
-			logger.Errorf("skip cron job %s[%s]", name, spec)
+			log.Errorf("skip cron job %s[%s]", name, spec)
 			return
 		}
 
 		code := "0"
 		t := time.Now()
 		if err = job(ctx); err != nil {
-			logger.Errorf("cron job error: %+v", err)
+			log.Errorf("cron job error: %+v", err)
 			code = "1"
 		}
 		d := time.Since(t)
 
 		metrics.JobTotal.WithLabelValues(code).Inc()
 
-		logger.WithField("cost", d.Seconds()).Infof("cron job %s[%s]", name, spec)
+		log.Infof(
+			"cost", d.Seconds(),
+			"cron job ", fmt.Sprintf("%s[%s]", name, spec),
+		)
 		return
 	}
 

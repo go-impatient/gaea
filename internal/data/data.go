@@ -14,17 +14,18 @@ var ProviderSet = wire.NewSet(NewData, NewUserRepo, NewPostRepo)
 
 // Data .
 type Data struct {
-	*ent.Client
+	db *ent.Client
 }
 
 // NewData .
 func NewData(logger log.Logger) (*Data, error) {
+	log := log.NewHelper("data", logger)
 	client, err := database.Init(logger)
 	if err != nil {
 		dialect := conf.Get("database.dialect")
-		logger.Errorf("failed opening connection to %s: %v", dialect, err)
+		log.Errorf("failed opening connection to %s: %v", dialect, err)
 		return nil, err
 	}
 
-	return &Data{Client: client}, err
+	return &Data{db: client}, err
 }

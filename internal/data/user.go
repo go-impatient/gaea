@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+
 	"moocss.com/gaea/internal/biz"
 	"moocss.com/gaea/pkg/log"
 )
@@ -9,14 +10,14 @@ import (
 // userRepository struct
 type userRepo struct {
 	data *Data
-	log  log.Logger
+	log  *log.Helper
 }
 
 // NewUserRepo returns an instance of `userRepo`.
 func NewUserRepo(data *Data, logger log.Logger) biz.UserRepo {
 	return &userRepo{
 		data: data,
-		log:  logger,
+		log:  log.NewHelper("user_repo", logger),
 	}
 }
 
@@ -59,4 +60,3 @@ func (r *userRepo) Count(ctx context.Context) (int, error) {
 	r.log.Info("Received UserRepository.Count")
 	return 0, nil
 }
-

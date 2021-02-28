@@ -10,6 +10,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net/http"
+	"os"
 	"regexp"
 	"time"
 
@@ -59,6 +60,9 @@ func NewInsecureClient(timeout time.Duration) Client {
 var digitsRE = regexp.MustCompile(`\b\d+\b`)
 
 func (c *myClient) Do(ctx context.Context, req *http.Request) (resp *http.Response, err error) {
+	logger := log.NewStdLogger(os.Stdout)
+	log := log.NewHelper("http", logger)
+
 	span, ctx := trace.StartSpanFromContext(ctx, "DoHTTP")
 	defer span.Finish()
 
@@ -80,7 +84,7 @@ func (c *myClient) Do(ctx context.Context, req *http.Request) (resp *http.Respon
 		status = resp.StatusCode
 	}
 
-	log.Get(ctx).Debugf(
+	log.Debugf(
 		"[HTTP] method:%s url:%s status:%d query:%s",
 		req.Method,
 		url,

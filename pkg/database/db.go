@@ -3,17 +3,19 @@ package database
 import (
 	"context"
 	"database/sql"
-	"log"
+	logd "log"
 	"sync"
 	"time"
 
 	entsql "entgo.io/ent/dialect/sql"
+
+	// init mysql driver
 	_ "github.com/go-sql-driver/mysql"
 
 	"moocss.com/gaea/internal/data/ent"
 	"moocss.com/gaea/internal/data/ent/migrate"
 	"moocss.com/gaea/pkg/conf"
-	logx "moocss.com/gaea/pkg/log"
+	"moocss.com/gaea/pkg/log"
 )
 
 // AsDefault alias for "default"
@@ -24,8 +26,10 @@ var (
 	sqlMap     sync.Map
 )
 
-// 初始化数据库
-func Init(logger logx.Logger) (client *ent.Client, err error) {
+// Init 初始化数据库
+func Init(logger log.Logger) (client *ent.Client, err error) {
+	log := log.NewHelper("database", logger)
+
 	config := conf.File("config")
 	dialect := config.Get("database.dialect")
 	dsn := config.Get("database.dsn")
@@ -75,9 +79,9 @@ func Init(logger logx.Logger) (client *ent.Client, err error) {
 	// Run Database Setup/Migrations
 	ctx := context.Background()
 	mode := config.Get("app.mode")
-	AutoMigration(ctx, client, logger)
+	AutoMigration(ctx, client, log)
 	if mode == "debug" {
-		DebugMode(ctx, client, logger)
+		DebugMode(ctx, client, log)
 	}
 
 	// 全局数据库客户端服务
@@ -88,24 +92,24 @@ func Init(logger logx.Logger) (client *ent.Client, err error) {
 }
 
 // AutoMigration .
-func AutoMigration(ctx context.Context, client *ent.Client, logger logx.Logger) error {
+func AutoMigration(ctx context.Context, client *ent.Client, logger *log.Helper) error {
 	err := client.Schema.Create(context.Background())
 	if err != nil {
-		logger.Printf("failed creating schema resources: %s", err.Error())
+		logger.Errorf("failed creating schema resources: %s", err.Error())
 		return err
 	}
 	return nil
 }
 
 // DebugMode .
-func DebugMode(ctx context.Context, client *ent.Client, logger logx.Logger) error {
+func DebugMode(ctx context.Context, client *ent.Client, logger *log.Helper) error {
 	err := client.Debug().Schema.Create(
 		ctx,
 		migrate.WithDropIndex(true),
 		migrate.WithDropColumn(true),
 	)
 	if err != nil {
-		logger.Printf("failed creating schema resources: %s", err.Error())
+		logger.Errorf("failed creating schema resources: %s", err.Error())
 		return err
 	}
 	return nil
@@ -115,14 +119,14 @@ func DebugMode(ctx context.Context, client *ent.Client, logger logx.Logger) erro
 func GetDatabase(name ...string) *ent.Client {
 	if len(name) == 0 || name[0] == AsDefault {
 		if defaultSQL == nil {
-			log.Panicf("Invalid db `%s` \n", AsDefault)
+			logd.Panicf("Invalid db `%s` \n", AsDefault)
 		}
 		return defaultSQL
 	}
 
 	v, ok := sqlMap.Load(name[0])
 	if !ok {
-		log.Panicf("Invalid db `%s` \n", name[0])
+		logd.Panicf("Invalid db `%s` \n", name[0])
 	}
 
 	return v.(*ent.Client)

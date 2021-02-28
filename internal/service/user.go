@@ -13,14 +13,14 @@ import (
 type UserServer struct {
 	user *biz.UserUsecase
 
-	log log.Logger
+	log *log.Helper
 }
 
 // NewUserServer .
 func NewUserServer(user *biz.UserUsecase, logger log.Logger) *UserServer {
 	return &UserServer{
 		user: user,
-		log:  logger,
+		log:  log.NewHelper("post", logger),
 	}
 }
 

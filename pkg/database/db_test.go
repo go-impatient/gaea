@@ -14,7 +14,7 @@ import (
 
 var dbClient *ent.Client
 var err error
-var logger = log.Get(context.Background())
+var logger = log.DefaultLogger
 
 func TestMain(m *testing.M) {
 	dbClient, err = Init(logger)
@@ -28,7 +28,8 @@ func TestMain(m *testing.M) {
 }
 
 func TestGetConnection(t *testing.T) {
-	conf.Load("../../config")
+	log := log.NewHelper("conf", logger)
+	conf.Load("../../config", log)
 
 	dbClient, err = Init(logger)
 	assert.Nil(t, err)

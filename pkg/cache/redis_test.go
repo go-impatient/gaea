@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var rc Client
+var rdb Client
 var once sync.Once
 
 var ctx = context.Background()
@@ -24,12 +24,12 @@ func setup() {
 		DB:       1,
 		Password: "",
 	})
-	rc = NewRedisClient(client, DefaultEncoding)
+	rdb = NewRedisClient(client, DefaultEncoding)
 }
 
 func TestSetGet(t *testing.T) {
 	once.Do(setup)
-	err := rc.Set(ctx, "test-src", "1", time.Now().UTC())
+	err := rdb.Set(ctx, "test-src", "1", time.Now().UTC())
 	if err != nil {
 		t.Errorf("储存数据失败: %s", err)
 		return
@@ -37,7 +37,7 @@ func TestSetGet(t *testing.T) {
 	assert.Nil(t, err)
 
 	var data string
-	res := rc.Get(ctx, "test-src", &data)
+	res := rdb.Get(ctx, "test-src", &data)
 	if res != nil {
 		t.Errorf("获取数据失败: %s", res)
 		return
@@ -47,7 +47,7 @@ func TestSetGet(t *testing.T) {
 }
 
 func ExampleNewRedisClient() {
-	opts, err := redis.ParseURL("redis://:qwerty@localhost:6379/1")
+	opts, err := redis.ParseURL("redis://localhost:6379/1")
 	if err != nil {
 		panic(err)
 	}

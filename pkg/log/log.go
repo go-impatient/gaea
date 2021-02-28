@@ -1,78 +1,55 @@
-// Package log 基础日志组件
 package log
 
 import (
-	"context"
 	"os"
-
-	"moocss.com/gaea/pkg/conf"
-	"moocss.com/gaea/pkg/ctxkit"
-
-	"github.com/k0kubun/pp/v3"
-	isatty "github.com/mattn/go-isatty"
-	"github.com/sirupsen/logrus"
 )
 
-func init() {
-	setLevel()
-	initPP()
+var (
+	// DefaultLogger is default logger.
+	DefaultLogger Logger = NewStdLogger(os.Stderr)
+
+	// LogrusLogger is logrus logger.
+	LogrusLogger Logger = NewLogrusLogger(os.Stderr)
+)
+
+// Logger is a logger interface.
+type Logger interface {
+	Print(pairs ...interface{})
 }
 
-func initPP() {
-	mypp := pp.New()
-	out := os.Stdout
-	mypp.SetOutput(out)
-	if !isatty.IsTerminal(out.Fd()) {
-		mypp.SetColoringEnabled(false)
+type logger struct {
+	log   Logger
+	pairs []interface{}
+}
+
+func (l *logger) Print(pairs ...interface{}) {
+	l.log.Print(append(pairs, l.pairs...)...)
+}
+
+// With with logger kv pairs.
+func With(log Logger, pairs ...interface{}) Logger {
+	if len(pairs) == 0 {
+		return log
 	}
+	return &logger{log: log, pairs: pairs}
 }
 
-// Logger logger
-type Logger = *logrus.Entry
-
-// Fields fields
-type Fields = logrus.Fields
-
-var levels = map[string]logrus.Level{
-	"panic": logrus.PanicLevel,
-	"fatal": logrus.FatalLevel,
-	"error": logrus.ErrorLevel,
-	"warn":  logrus.WarnLevel,
-	"info":  logrus.InfoLevel,
-	"debug": logrus.DebugLevel,
+// Debug returns a debug logger.
+func Debug(log Logger) Logger {
+	return With(log, LevelKey, LevelDebug)
 }
 
-func setLevel() {
-	levelConf := conf.Get("LOG_LEVEL_" + conf.Hostname)
-
-	if levelConf == "" {
-		levelConf = conf.Get("LOG_LEVEL")
-	}
-
-	if level, ok := levels[levelConf]; ok {
-		logrus.SetLevel(level)
-	} else {
-		logrus.SetLevel(logrus.DebugLevel)
-	}
+// Info returns a info logger.
+func Info(log Logger) Logger {
+	return With(log, LevelKey, LevelInfo)
 }
 
-// Get 获取日志实例
-func Get(ctx context.Context) Logger {
-	return logrus.WithFields(logrus.Fields{
-		"env":         conf.Env,
-		"app_id":      conf.AppID,
-		"instance_id": conf.Hostname,
-		"ip":          ctxkit.GetUserIP(ctx),
-		"trace_id":    ctxkit.GetTraceID(ctx),
-	})
+// Warn return a warn logger.
+func Warn(log Logger) Logger {
+	return With(log, LevelKey, LevelWarn)
 }
 
-// Reset 使用最新配置重置日志级别
-func Reset() {
-	setLevel()
-}
-
-// PP 类似 PHP 的 var_dump
-func PP(args ...interface{}) {
-	pp.Println(args...)
+// Error returns a error logger.
+func Error(log Logger) Logger {
+	return With(log, LevelKey, LevelError)
 }

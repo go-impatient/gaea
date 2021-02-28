@@ -39,32 +39,31 @@ func (ln tcpKeepAliveListener) Accept() (net.Conn, error) {
 	return tc, nil
 }
 
-var logger = log.Get(context.Background())
-
 func main() {
 	reload := make(chan int, 1)
 	stop := make(chan os.Signal, 1)
 
+	logger := log.NewStdLogger(os.Stdout)
+	log := log.NewHelper("main", logger)
+
 	// 初始化配置文件
-	conf.Init()
+	conf.Init(logger)
 	conf.OnConfigChange(func() { reload <- 1 })
 	conf.WatchConfig()
-	logLevel := conf.Get("LOG_LEVEL")
-	logger.Infof("LOG_LEVEL: %s", logLevel)
 
 	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT, syscall.SIGHUP)
 
-	startServer()
+	startServer(logger)
 
 	for {
 		select {
 		case <-reload:
 			pkg.Reset()
 		case sg := <-stop:
-			stopServer()
+			stopServer(log)
 			// 仿 nginx 使用 HUP 信号重载配置
 			if sg == syscall.SIGHUP {
-				startServer()
+				startServer(logger)
 			} else {
 				pkg.Stop()
 				return
@@ -73,9 +72,7 @@ func main() {
 	}
 }
 
-func startServer() {
-	logger.Info("start server")
-
+func startServer(logger log.Logger) {
 	rand.Seed(int64(time.Now().Nanosecond()))
 
 	// 注入App需要的依赖
@@ -84,14 +81,13 @@ func startServer() {
 		panic(err)
 	}
 
-
 	mux := http.NewServeMux()
 
 	timeout := 600 * time.Millisecond
-	initMux(mux, services, isInternal)
+	initMux(mux, services, logger, isInternal)
 
 	if isInternal {
-		initInternalMux(mux, services)
+		initInternalMux(mux, services, logger)
 
 		if d := conf.GetDuration("INTERNAL_API_TIMEOUT"); d > 0 {
 			timeout = d
@@ -157,14 +153,14 @@ func startServer() {
 	wg.Wait()
 }
 
-func stopServer() {
+func stopServer(logger *log.Helper) {
 	logger.Info("stop server")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	if err := server.Shutdown(ctx); err != nil {
-		logger.Fatal(err)
+		panic(err)
 	}
 
 	pkg.Reset()

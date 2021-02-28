@@ -12,21 +12,21 @@ import (
 
 type postRepo struct {
 	data *Data
-	log  log.Logger
+	log  *log.Helper
 }
 
 // NewPostRepo returns an instance of `postRepo`.
 func NewPostRepo(data *Data, logger log.Logger) biz.PostRepo {
 	return &postRepo{
 		data: data,
-		log:  logger,
+		log:  log.NewHelper("post_repo", logger),
 	}
 }
 
 // implement biz.PostRepo
 func (r *postRepo) Create(ctx context.Context, post *biz.Post) (*biz.Post, error) {
 	r.log.Info("Received PostRepository.Create")
-	out, err := r.data.Client.Post.Create().
+	out, err := r.data.db.Post.Create().
 		SetTitle(post.Title).
 		SetContent(post.Content).
 		Save(ctx)
@@ -43,7 +43,7 @@ func (r *postRepo) Update(ctx context.Context, post *biz.Post) (*biz.Post, error
 	r.log.Info("Received PostRepository.Update")
 
 	var tx *ent.Tx
-	tx, err := r.data.Client.Tx(ctx)
+	tx, err := r.data.db.Tx(ctx)
 	if err != nil {
 		return nil, err
 	}

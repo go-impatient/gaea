@@ -18,7 +18,9 @@ type bizResponse interface {
 }
 
 // NewLog 统一记录请求日志
-func NewLog() *twirp.ServerHooks {
+func NewLog(logger log.Logger) *twirp.ServerHooks {
+	log := log.NewHelper("hook/log", logger)
+
 	return &twirp.ServerHooks{
 		ResponsePrepared: func(ctx context.Context) context.Context {
 			span, ctx := opentracing.StartSpanFromContext(ctx, "SendResp")
@@ -75,22 +77,27 @@ func NewLog() *twirp.ServerHooks {
 				form.Del("sign")
 			}
 
-			log.Get(ctx).WithFields(log.Fields{
-				"path":     path,
-				"status":   status,
-				"params":   form.Encode(),
-				"cost":     duration.Seconds(),
-				"biz_code": bizCode,
-				"biz_msg":  bizMsg,
-			}).Info("new rpc")
+			log.Infow(
+				"env", conf.Env,
+				"app_id", conf.AppID,
+				"instance_id", conf.Hostname,
+				"ip", ctxkit.GetUserIP(ctx),
+				"trace_id", ctxkit.GetTraceID(ctx),
+				"path", path,
+				"status", status,
+				"params", form.Encode(),
+				"cost", duration.Seconds(),
+				"biz_code", bizCode,
+				"biz_msg", bizMsg,
+			)
 		},
 		Error: func(ctx context.Context, err twirp.Error) context.Context {
 			c := twirp.ServerHTTPStatusFromErrorCode(err.Code())
 
 			if c >= 500 {
-				log.Get(ctx).Errorf("%+v", cause(err))
+				log.Errorf("%+v", cause(err))
 			} else if c >= 400 {
-				log.Get(ctx).Warn(err)
+				log.Warn(err)
 			}
 
 			return ctx

@@ -11,13 +11,13 @@ import (
 type PostServer struct {
 	post *biz.PostUsecase
 
-	log log.Logger
+	log *log.Helper
 }
 
 func NewPostServer(post *biz.PostUsecase, logger log.Logger) *PostServer {
 	return &PostServer{
 		post: post,
-		log: logger,
+		log:  log.NewHelper("post", logger),
 	}
 }
 

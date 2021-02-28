@@ -1,12 +1,15 @@
-# log
+# Log
 
-log 目前最低级别是 debug，可以通过 LOG_LEVEL 环境变量或者配置项指定。
+## Usage
 
-log 会记录上下文信息，所以需要传入一个 ctx 才能获取 log 实例。
+### Structured logging
 
-## 示例
-```go
-import "moocss.com/gaea/pkg/log"
-
-log.Get(ctx).Errorf("1 + 2 = %d", 1 + 2)
 ```
+logger := log.NewStdLogger(os.Stdout)
+log := log.NewHelper("module_name", logger)
+// Levels
+log.Info("some log")
+log.Infof("format %s", "some log")
+log.Infow("field_name", "some log")
+```
+
