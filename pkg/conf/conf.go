@@ -80,11 +80,9 @@ func Init(logger log.Logger) {
 		if confPath, err = os.Getwd(); err != nil {
 			panic(err)
 		}
-		log.Infow(
-			"use default conf path",
-			confPath,
-		)
 		confPath += "/config"
+
+		log.Infof("use default conf path %s", confPath)
 	}
 
 	Load(confPath, log)
