@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package blog.v1;
+
+// 博客服务
+service Blog {
+    // 创建文章
+    rpc CreateArticle (CreateArticleRequest) returns (CreateArticleReply);
+    // 更新文章
+    rpc UpdateArticle (UpdateArticleRequest) returns (UpdateArticleReply);
+    // 删除文章
+    rpc DeleteArticle (DeleteArticleRequest) returns (DeleteArticleReply);
+    // 获取文章
+    rpc GetArticle (GetArticleRequest) returns (GetArticleReply);
+    // 获取文章列表
+    rpc ListArticle (ListArticleRequest) returns (ListArticleReply);
+}
+
+message Article {
+    int64 id = 1;
+    string title = 2;
+    string content = 3;
+    int64 like = 4;
+}
+
+message CreateArticleRequest {
+    string title = 1;
+    string content = 2;
+}
+
+message CreateArticleReply {
+    Article Article = 1;
+}
+
+message UpdateArticleRequest {
+    int64 id = 1;
+    string title = 2;
+    string content = 3;
+}
+
+message UpdateArticleReply {
+    Article Article = 1;
+}
+
+message DeleteArticleRequest {
+    int64 id = 1;
+}
+message DeleteArticleReply {
+}
+
+message GetArticleRequest {
+    int64 id = 1;
+}
+
+message GetArticleReply {
+    Article Article = 1;
+}
+
+message ListArticleRequest {
+}
+
+message ListArticleReply {
+    repeated Article results = 1;
+}

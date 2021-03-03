@@ -42,7 +42,7 @@ cache:
   redis:
     default_init_conns: 1 # 初始连接数
     default_max_conns: 2 # 最大连接数
-    addr: "127.0.0.1:6379"
+    addr: 127.0.0.1:6379
     password: ""
     db: 1
 

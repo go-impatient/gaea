@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// User .
 type User struct {
 	ID                    uint64
 	Username              string    // 用户名
@@ -36,20 +37,22 @@ type UserRepo interface {
 	Count(ctx context.Context) (int, error)
 }
 
-// UserUsecase
+// UserUsecase .
 type UserUsecase struct {
 	repo UserRepo
 }
 
-// NewUserUsecase
+// NewUserUsecase .
 func NewUserUsecase(repo UserRepo) *UserUsecase {
 	return &UserUsecase{repo: repo}
 }
 
-func (uc *UserUsecase) CreateUser(ctx context.Context, user *User) (*User, error) {
+// Create .
+func (uc *UserUsecase) Create(ctx context.Context, user *User) (*User, error) {
 	return uc.repo.Create(ctx, user)
 }
 
-func (uc *UserUsecase) UpdateUser(ctx context.Context, user *User) (*User, error) {
+// Update .
+func (uc *UserUsecase) Update(ctx context.Context, user *User) (*User, error) {
 	return uc.repo.Update(ctx, user)
 }

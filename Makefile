@@ -45,31 +45,42 @@ LIB_PBGENS := $(LIB_PROTOS:.proto=.pb.go)
 default: rpc util
 	go build -trimpath -mod=readonly
 
+.PHONY: rpc
 rpc: $(RPC_PBGENS)
 	@exit
 
+.PHONY: util
 util: $(LIB_PBGENS)
 	@exit
 
+.PHONY: cmd
 cmd:
 	go install ./cmd/protoc-gen-twirp
 
+.PHONY: clean
 clean:
 	git clean -x -f -d
 
+.PHONY: rename
 rename:
 	go run cmd/sniper/main.go rename  --package $(name)
 
+.PHONY: run-public
 run-public:
 	export APP_ID=GaeaApi; export DEPLOY_ENV=uat; go run main.go server --port=8080;
 
+.PHONY: run-private
 run-private:
 	export APP_ID=GaeaInternalApi; go run main.go server --port=8080 --internal;
 
+.PHONY: run-job
 run-job:
 	export APP_ID=GaeaJob; go run main.go job --port=8081;
 
+.PHONY: wire
 wire:
 	wire ./cmd/server
 
-.PHONY: clean rpc util cmd
+.PHONY: ent
+ent:
+	cd internal/data/ && ent generate ./ent/schema	

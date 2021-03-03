@@ -8,14 +8,6 @@ import (
 	pb "moocss.com/gaea/rpc/user/v1"
 )
 
-// UserServer 实现 /user.v1.User 服务
-// FIXME 服务必须写注释
-type UserServer struct {
-	user *biz.UserUsecase
-
-	log *log.Helper
-}
-
 // NewUserServer .
 func NewUserServer(user *biz.UserUsecase, logger log.Logger) *UserServer {
 	return &UserServer{

@@ -4,10 +4,14 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"moocss.com/gaea/pkg/log"
 )
 
+var logger = log.DefaultLogger
+
 func TestConfig(t *testing.T) {
-	Load("../../config")
+	log := log.NewHelper("conf", logger)
+	Load("../../config", log)
 
 	logPath := Get("LOG_PATH")
 	assert.NotNil(t, logPath)

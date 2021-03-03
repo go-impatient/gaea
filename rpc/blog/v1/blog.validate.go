@@ -19,7 +19,7 @@ var (
 	_ = (*url.URL)(nil)
 )
 
-func (m *GetPostRequest) validate() error {
+func (m *CreateArticleRequest) validate() error {
 	if m == nil {
 		return nil
 	}
@@ -27,20 +27,20 @@ func (m *GetPostRequest) validate() error {
 	return nil
 }
 
-type GetPostRequestValidationError struct {
+type BlogEchoReqValidationError struct {
 	field  string
 	reason string
 }
 
 // Error satisfies the builtin error interface
-func (e GetPostRequestValidationError) Error() string {
+func (e BlogEchoReqValidationError) Error() string {
 	return fmt.Sprintf(
-		"invalid GetPostRequest.%s: %s",
+		"invalid BlogEchoReq.%s: %s",
 		e.field,
 		e.reason)
 }
 
-func (m *GetPostReply) validate() error {
+func (m *CreateArticleReply) validate() error {
 	if m == nil {
 		return nil
 	}
@@ -48,15 +48,15 @@ func (m *GetPostReply) validate() error {
 	return nil
 }
 
-type PostEchoRespValidationError struct {
+type BlogEchoRespValidationError struct {
 	field  string
 	reason string
 }
 
 // Error satisfies the builtin error interface
-func (e PostEchoRespValidationError) Error() string {
+func (e BlogEchoRespValidationError) Error() string {
 	return fmt.Sprintf(
-		"invalid PostEchoResp.%s: %s",
+		"invalid BlogEchoResp.%s: %s",
 		e.field,
 		e.reason)
 }

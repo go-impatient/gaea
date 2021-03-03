@@ -90,3 +90,10 @@ echo 'msg:"Hello World"' \
 grep -rl "检索内容" --include="*" ./ | xargs sed -i "" "s/检索内容/修改后内容/g"
 
 ```
+
+### redis
+```
+redis-server # 启动redis服务端
+redis-cli    # 启动redis客户端
+shutdown     # 关闭redis服务端
+```

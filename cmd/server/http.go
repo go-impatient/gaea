@@ -20,15 +20,15 @@ func initMux(mux *http.ServeMux, services *service.Services, logger log.Logger, 
 	}
 
 	{
-		server := services.PostServer
-		handler := blog_v1.NewPostServer(server, hooks.Init(logger))
-		mux.Handle(blog_v1.PostPathPrefix, handler)
-	}
-
-	{
 		server := services.UserServer
 		handler := user_v1.NewUserServer(server, hooks.Init(logger))
 		mux.Handle(user_v1.UserPathPrefix, handler)
+	}
+
+	{
+		server := services.BlogServer
+		handler := blog_v1.NewBlogServer(server, hooks.Init(logger))
+		mux.Handle(blog_v1.BlogPathPrefix, handler)
 	}
 }
 

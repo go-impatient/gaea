@@ -13,7 +13,7 @@ require (
 	github.com/dave/dst v0.25.5
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fsnotify/fsnotify v1.4.9
-	github.com/go-redis/redis/v8 v8.5.0 // indirect
+	github.com/go-redis/redis/v8 v8.5.0
 	github.com/go-sql-driver/mysql v1.5.1-0.20200311113236-681ffa848bae
 	github.com/google/uuid v1.2.0
 	github.com/google/wire v0.5.0
@@ -34,6 +34,7 @@ require (
 	github.com/uber/jaeger-client-go v2.22.1+incompatible
 	github.com/uber/jaeger-lib v2.1.1+incompatible
 	github.com/ugorji/go/codec v0.0.0-20181204163529-d75b2dcb6bc8 // indirect
+	go.opentelemetry.io/otel v0.16.0
 	go.uber.org/atomic v1.5.1 // indirect
 	go.uber.org/automaxprocs v1.3.0
 	golang.org/x/net v0.0.0-20201202161906-c7110b5ffcbb
