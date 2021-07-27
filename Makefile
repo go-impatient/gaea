@@ -21,15 +21,15 @@ LIB_PBGENS := $(LIB_PROTOS:.proto=.pb.go)
 # https://github.com/golang/protobuf/issues/1158#issuecomment-650694184
 #
 # $(...) 中的神奇代码是为实现以下替换
-# pkg/kv/taishan/taishan.proto => sniper/pkg/taishan
+# pkg/kv/taishan/taishan.proto => pkg/taishan
 %.pb.go: %.proto
-	protoc --go_out=M$<=$(patsubst %/,sniper/%,$(dir $<)):. $<
+	protoc --go_out=M$<=$(patsubst %/,%,$(dir $<)):. $<
 
 # $(...) 中的神奇代码是为实现以下替换
-# rpc/pkg/v0/kv.proto => sniper/rpc/pkg/v0;util_v0
+# rpc/pkg/v0/kv.proto => rpc/pkg/v0;util_v0
 %.twirp.go: %.proto
 	$(eval m=$<=$(join \
-			$(patsubst %/,sniper/%\;,\
+			$(patsubst %/,%\;,\
 				$(dir $<)\
 			),\
 			$(subst /v,_v,\
